@@ -1,0 +1,27 @@
+# Product:      EndsMeet Framework
+# Version:      0.06 Beta 1
+# Developer:    Aeric Poon
+# License:      Open source
+# Paypal:       https://paypal.me/aeric80/
+# Please consider to donate to me so I can continue to improve this project
+# Thanks to Erel, Anywhere Software for the great products and B4X community for encouragement and supports.
+
+# Lines starting with '#' are comments.
+# Lines starting with ';' are disabled.
+# Backslash character at the end of line means that the command continues in the next line.
+
+# Define App Constants
+HOME_TITLE=EndsMeet API Documentation
+APP_TITLE=EndsMeet Framework
+APP_TRADEMARK=EndsMeet
+APP_COPYRIGHT=Copyright Computerise System Solutions 2023
+
+# Server Path
+ROOT_URL=http://127.0.0.1
+ROOT_PATH=demo
+API_NAME=api
+API_VERSIONING=True
+
+# Java server port
+ServerPort=0
+SSLPort=0
