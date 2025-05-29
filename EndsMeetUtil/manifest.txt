@@ -1,4 +1,0 @@
-Author=Aeric
-Version=0.06
-B4J.DependsOn=
-Supported Platforms=B4J
