@@ -5,16 +5,17 @@ FileGroup1=Default Group
 Group=App
 Library1=jcore
 Library2=webapiutils
+Library3=minihtml
 Module1=HttpsFilter
 Module2=IndexWebHandler
 NumberOfFiles=1
-NumberOfLibraries=2
+NumberOfLibraries=3
 NumberOfModules=2
 Version=10.2
 @EndOfDesignText@
 #Region Project Attributes
-' Product: 				Inti - Core of Pakai framework
-' Version: 				1.00
+' Product: 				EndsMeet
+' Version: 				0.80
 ' License:				MIT License
 ' Developer:			Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
 ' Donation:				PayPal (https://paypal.me/aeric80/)
@@ -32,16 +33,17 @@ Sub Process_Globals
 	Public conf 				As ServerConfigurations
 	Private Const COLOR_RED 	As Int = -65536
 	Private Const COLOR_BLUE 	As Int = -16776961
-	Private Const VERSION_NAME	As String = "1.00"
+	Private Const VERSION_NAME	As String = "0.80"
 	Type ServerConfigurations (EnableCORS As Boolean, EnableHelp As Boolean, EnableSSL As Boolean, Port As Int, SSLPort As Int, RootUrl As String, RootPath As String, ServerUrl As String, ApiName As String, ApiVersioning As Boolean, VerboseMode As Boolean, ContentType As String, SslKeystoreDir As String, SslKeystoreFile As String, SslKeystorePassword As String, StaticFilesBrowsable As Boolean, StaticFilesFolder As String, Version As String, SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	InitServer
-	srvr.AddHandler("", "IndexWebHandler", False) ' Add your server handler here
+	srvr.AddHandler("", "IndexWebHandler", False)
+	srvr.AddHandler("/modal", "IndexWebHandler", False)
 	srvr.Start
-	Log($"Inti server (version = ${conf.Version}) is running on port ${srvr.Port}${IIf(srvr.SslPort > 0, $" (redirected to port ${srvr.SslPort})"$, "")}"$)
+	Log($"EndsMeet server (version = ${conf.Version}) is running on port ${srvr.Port}${IIf(srvr.SslPort > 0, $" (redirected to port ${srvr.SslPort})"$, "")}"$)
 	StartMessageLoop
 End Sub
 
