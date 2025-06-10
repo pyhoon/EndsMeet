@@ -18,8 +18,9 @@ Public Sub Filter (req As ServletRequest, resp As ServletResponse) As Boolean
 	If req.Secure Then
 		Return True
 	Else
+		Dim app As EndsMeet = Main.app
 		resp.SendRedirect(req.FullRequestURI.Replace("http:", "https:") _
-       .Replace(Main.srvr.Port, Main.srvr.SslPort))
+       .Replace(app.Port, app.SslPort))
 		Return False
 	End If
 End Sub
