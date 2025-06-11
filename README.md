@@ -1,7 +1,5 @@
 # EndsMeet
-Simple B4J Server
-
-Create a server app with 4 lines of code:
+Create a server app with 3 lines of code:
 ```basic
 Sub Process_Globals
 	Public app As EndsMeet
