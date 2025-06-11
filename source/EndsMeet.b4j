@@ -1,5 +1,5 @@
 ﻿AppType=StandardJava
-Build1=Default,endsmeet.server
+Build1=Default,com.puterise
 File1=config.example
 File2=help.html
 FileGroup1=Default Group
