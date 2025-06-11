@@ -1,27 +1,29 @@
 ﻿AppType=StandardJava
-Build1=Default,inti.server,hu2_acceptall
+Build1=Default,endsmeet.server
 File1=config.example
+File2=help.html
 FileGroup1=Default Group
+FileGroup2=Default Group
 Group=App
 Library1=jcore
 Library2=webapiutils
 Library3=minihtml
 Module1=EndsMeet
-Module2=HttpsFilter
-Module3=Index
-NumberOfFiles=1
+Module2=HelpHandler
+Module3=HttpsFilter
+Module4=Index
+NumberOfFiles=2
 NumberOfLibraries=3
-NumberOfModules=3
+NumberOfModules=4
 Version=10.2
 @EndOfDesignText@
 #Region Project Attributes
 ' Product: 				EndsMeet
 ' Version: 				0.90
 ' License:				MIT License
-' Developer:			Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
-' Donation:				PayPal (https://paypal.me/aeric80/)
 ' GitHub:				https://github.com/pyhoon/EndsMeet
-' AppStart: 			ide://goto?Module=Main&Sub=AppStart
+' Donation:				PayPal (https://paypal.me/aeric80/)
+' Developer:			Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
 ' Objects folder: 		ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\Objects
 #CommandLineArgs:
 #MergeLibraries: True
@@ -29,7 +31,6 @@ Version=10.2
 
 Sub Process_Globals
 	Public app As EndsMeet
-	Type ServerConfigurations (EnableCORS As Boolean, EnableHelp As Boolean, EnableSSL As Boolean, Port As Int, SslPort As Int, RootUrl As String, RootPath As String, ServerUrl As String, ApiName As String, ApiVersioning As Boolean, VerboseMode As Boolean, ContentType As String, SslKeystoreDir As String, SslKeystoreFile As String, SslKeystorePassword As String, StaticFilesBrowsable As Boolean, StaticFilesFolder As String, Version As String, SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
@@ -37,8 +38,18 @@ Sub AppStart (Args() As String)
 	app.Initialize
 	app.Route("", "Index")
 	app.Route("/modal", "Index")
+	app.Route("/api/*", "Index")
+	app.Route("/help", "HelpHandler")
+	app.CorsPath = Array("*")
+	app.CorsSettings = CreateMap( _
+ "allowedOrigins": "*", _
+ "allowedHeaders": "*", _
+ "allowedMethods": "*", _
+ "allowCredentials": "true", _
+ "preflightMaxAge": 1800, _
+ "chainPreflight": "false")
+	app.LogEnabled = True
+	app.UseConfigFile = True
 	app.Start
-	app.ShowLog
-	'app.SslEnabled = True
 	StartMessageLoop
 End Sub

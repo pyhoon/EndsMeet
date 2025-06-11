@@ -10,10 +10,11 @@ Sub Class_Globals
 	Private Method As String
 	Private Elements() As String
 	Private ElementKey As String
+	Private HRM As HttpResponseMessage
 End Sub
 
 Public Sub Initialize
-	
+	HRM.Initialize
 End Sub
 
 Sub Handle (req As ServletRequest, resp As ServletResponse)
@@ -22,8 +23,8 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	Method = Request.Method.ToUpperCase
 	Dim FullElements() As String = WebApiUtils.GetUriElements(Request.RequestURI)
 	Elements = WebApiUtils.CropElements(FullElements, 1) ' 1 For Index handler
-	If Method <> "GET" Then
-		WebApiUtils.ReturnHtmlMethodNotAllowed(Response)
+	If Method <> "GET" And Method <> "POST" Then
+		WebApiUtils.ReturnMethodNotAllow(HRM, Response)
 		Return
 	End If
 	If ElementMatch("") Then
@@ -34,6 +35,14 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 		Select ElementKey
 			Case "modal"
 				WebApiUtils.ReturnHtml(GenerateModal, Response)
+				Return
+			Case "api"
+				HRM.ResponseCode = 200
+				HRM.ResponseMessage = "Success"
+				HRM.ResponseData = Array()
+				HRM.VerboseMode = True
+				HRM.OrderedKeys = True
+				WebApiUtils.ReturnHttpResponse(HRM, Response)
 				Return
 		End Select
 	End If
@@ -61,7 +70,7 @@ Private Sub ShowIndexPage
 	doc.AppendDocType
 	doc.Append(GenerateIndex)
 	Dim content As String = doc.ToString
-	LogColor(content, -16776961)
+	'LogColor(content, -16776961)
 	WebApiUtils.ReturnHTML(content, Response)
 End Sub
 
