@@ -1,5 +1,5 @@
 /*!
- * EndsMeet Server B4J Project Template v0.90 by @pyhoon (https://github.com/pyhoon/EndsMeet)
+ * EndsMeet Server B4J Project Template v0.93 by @pyhoon (https://github.com/pyhoon/EndsMeet)
  * Copyright (c) 2023-2025 Poon Yip Hoon (Aeric)
  * Licensed under MIT (https://github.com/pyhoon/EndsMeet/blob/main/LICENSE)
  */

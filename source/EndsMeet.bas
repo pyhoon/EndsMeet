@@ -7,37 +7,42 @@ Version=10.2
 Sub Class_Globals
 	Public ctx 						As Map
 	Public srvr 					As Server
+	Public api 						As ApiSettings
+	Public ssl 						As SslSettings
+	Public cors 					As CorsSettings
+	Public email 					As EmailSettings
+	Public static 					As StaticFilesSettings
 	Private mPort 					As Int
-	Private mSslPort 				As Int
-	Private mCorsPath				As List
-	Private mCorsSettings			As Map
 	Private mRootUrl 				As String
 	Private mRootPath 				As String
 	Private mServerUrl 				As String
-	Private mApiName 				As String
 	Private mMessage 				As String
 	Private mVersion				As String
-	Private mStaticFilesDir 		As String
-	Private mSslKeystoreDir			As String
-	Private mSslKeystoreFile		As String
-	Private mSslKeystorePassword 	As String
 	Private mRedirect 				As Boolean
 	Private mLogEnabled 			As Boolean
-	Private mSslEnabled 			As Boolean
-	Private mCORSEnabled 			As Boolean
-	Private mHelpEnabled 			As Boolean
-	Private mApiVersioning 			As Boolean
 	Private mUseConfigFile			As Boolean
-	Private mStaticFilesBrowsable	As Boolean
 	Private Const COLOR_RED 		As Int = -65536
 	Private Const COLOR_BLUE 		As Int = -16776961
+	Type ApiSettings (Name As String, Versioning As Boolean, PayloadType As String, ContentType As String, EnableHelp As Boolean, VerboseMode As Boolean, OrderedKeys As Boolean)
+	Type SslSettings (Enabled As Boolean, Port As Int, KeystoreDir As String, KeystoreFile As String, KeystorePassword As String)
+	Type EmailSettings (SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
+	Type CorsSettings (Enabled As Boolean, Path As List, Settings As Map)
+	Type StaticFilesSettings (Folder As String, Browsable As Boolean)
 End Sub
 
 Public Sub Initialize
 	ctx.Initialize
+	api.Initialize
+	ssl.Initialize
+	cors.Initialize
+	email.Initialize
+	static.Initialize
 	srvr.Initialize("")
-	mVersion = "0.90"
-	mStaticFilesDir = File.Combine(File.DirApp, "www")
+	mPort = 8080
+	mVersion = "0.93"
+	mRootUrl = "http://127.0.0.1"
+	api.Name = "api"
+	static.Folder = File.Combine(File.DirApp, "www")
 End Sub
 
 Public Sub Route (Path As String, Class As String)
@@ -50,18 +55,31 @@ Public Sub Start
 			File.Copy(File.DirAssets, "config.example", File.DirApp, "config.ini")
 		End If
 		ctx = File.ReadMap(File.DirApp, "config.ini")
-		If ctx.ContainsKey("Version") = False Then ctx.Put("Version", mVersion)
-		If ctx.ContainsKey("StaticFilesFolder") = False Then ctx.Put("Version", mVersion)
-		mPort = ctx.GetDefault("ServerPort", 8080)
-		mSslPort = ctx.GetDefault("SSLPort", 0)
-		mRootUrl = ctx.GetDefault("ROOT_URL", "http://127.0.0.1")
-		mRootPath = ctx.GetDefault("ROOT_PATH", "")
-		mApiName = ctx.GetDefault("API_NAME", "api")
-		mApiVersioning = ctx.GetDefault("API_VERSIONING", "False").As(String).EqualsIgnoreCase("True")
-		mSslKeystoreDir = ctx.GetDefault("SSL_KEYSTORE_DIR", "")
-		mSslKeystoreFile = ctx.GetDefault("SSL_KEYSTORE_FILE", "")
-		mSslKeystorePassword = ctx.GetDefault("SSL_KEYSTORE_PASSWORD", "")
+		If ctx.ContainsKey("PORT") Then mPort = ctx.Get("PORT")
+		If ctx.ContainsKey("SSL_PORT") Then ssl.Port = ctx.Get("SSL_PORT")
+		If ctx.ContainsKey("SSL_KEYSTORE_DIR") Then ssl.KeystoreDir = ctx.Get("SSL_KEYSTORE_DIR")
+		If ctx.ContainsKey("SSL_KEYSTORE_FILE") Then ssl.KeystoreFile = ctx.Get("SSL_KEYSTORE_FILE")
+		If ctx.ContainsKey("SSL_KEYSTORE_PASSWORD") Then ssl.KeystorePassword = ctx.Get("SSL_KEYSTORE_PASSWORD")
+		If ctx.ContainsKey("ROOT_URL") Then mRootUrl = ctx.Get("ROOT_URL")
+		If ctx.ContainsKey("ROOT_PATH") Then mRootPath = ctx.Get("ROOT_PATH")
+		If ctx.ContainsKey("API_NAME") Then api.Name = ctx.Get("API_NAME")
+		If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
+		If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
+		If ctx.ContainsKey("API_ORDERED_KEYS") Then api.OrderedKeys = ctx.Get("API_ORDERED_KEYS").As(String).EqualsIgnoreCase("True")
 		mServerUrl = mRootUrl
+		' Update useful keys
+		ctx.Put("ROOT_URL", mRootUrl)
+		ctx.Put("ROOT_PATH", mRootPath)
+		' Remove unused keys
+		ctx.Remove("PORT")
+		ctx.Remove("SSL_PORT")
+		ctx.Remove("SSL_KEYSTORE_DIR")
+		ctx.Remove("SSL_KEYSTORE_FILE")
+		ctx.Remove("SSL_KEYSTORE_PASSWORD")
+		ctx.Remove("API_NAME")
+		ctx.Remove("API_VERSIONING")
+		ctx.Remove("API_VERBOSE_MODE")
+		ctx.Remove("API_ORDERED_KEYS")
 	End If
 	If mPort <> 0 Then
 		srvr.Port = mPort
@@ -69,47 +87,45 @@ Public Sub Start
 		mPort = srvr.Port
 		If mLogEnabled Then	LogColor($"Server Port is not set (default to ${mPort})"$, COLOR_RED)
 	End If
-	If mSslPort = 0 Then
-		mSslEnabled = False
-		'If mLogEnabled Then	LogColor("SSL Port is not set (SSL is disabled)", COLOR_RED)
+
+	If ssl.Port = 0 Then
+		ssl.Enabled = False
+		If mPort <> 80 Then
+			mServerUrl = mRootUrl & ":" & mPort
+		End If
 		ctx.Put("SERVER_URL", mServerUrl)
-	End If
-	If mSslEnabled Then
-		If mSslKeystoreFile = "" Then
-			mSslEnabled = False
-			If mLogEnabled Then	LogColor("SslKeystoreFile is not set (SSL is disabled)", COLOR_RED)
+		If mLogEnabled Then	LogColor("SSL is disabled", COLOR_BLUE)
+	Else
+		If ssl.KeystoreFile = "" Then
+			ssl.Enabled = False
+			If mLogEnabled Then	LogColor("Ssl KeystoreFile is not set (SSL is disabled)", COLOR_RED)
 		Else
-			If mSslKeystoreDir = "" Then
-				mSslKeystoreDir = File.DirApp
+			If ssl.KeystoreDir = "" Then
+				ssl.KeystoreDir = File.DirApp
 			End If
-			If File.Exists(mSslKeystoreDir, mSslKeystoreFile) = False Then
-				mSslEnabled = False
-				If mLogEnabled Then	LogColor("SslKeystoreFile is found (SSL is disabled)", COLOR_RED)
+			If File.Exists(ssl.KeystoreDir, ssl.KeystoreFile) = False Then
+				ssl.Enabled = False
+				If mLogEnabled Then	LogColor("Ssl KeystoreFile is found (SSL is disabled)", COLOR_RED)
 			Else
-				Dim ssl As SslConfiguration
-				ssl.Initialize
-				ssl.SetKeyStorePath(mSslKeystoreDir, mSslKeystoreFile)
-				ssl.KeyStorePassword = mSslKeystorePassword
-				srvr.SetSslConfiguration(ssl, mSslPort)
+				Dim sc As SslConfiguration
+				sc.Initialize
+				sc.SetKeyStorePath(ssl.KeystoreDir, ssl.KeystoreFile)
+				sc.KeyStorePassword = ssl.KeystorePassword
+				srvr.SetSslConfiguration(sc, ssl.Port)
 				If mRedirect Then
-					'add filter to redirect all traffic from http to https (optional)
+					' Add filter to redirect all traffic from http to https (optional)
 					srvr.AddFilter("/*", "HttpsFilter", False)
 					mRootUrl = mRootUrl.Replace("http:", "https:")
 					ctx.Put("ROOT_URL", mRootUrl)
 				End If
 				If mPort <> 443 Then
-					mServerUrl = mRootUrl & ":" & mSslPort
+					mServerUrl = mRootUrl & ":" & ssl.Port
 					ctx.Put("SERVER_URL", mServerUrl)
 				End If
+				ssl.Enabled = True
 				If mLogEnabled Then	LogColor("SSL is enabled", COLOR_BLUE)
 			End If
 		End If
-	Else
-		If mPort <> 80 Then
-			mServerUrl = mRootUrl & ":" & mPort
-			ctx.Put("SERVER_URL", mServerUrl)
-		End If
-		If mLogEnabled Then	LogColor("SSL is disabled", COLOR_BLUE)
 	End If
 	If mRootPath <> "" Then
 		If mRootPath.StartsWith("/") = False Then mRootPath = "/" & mRootPath
@@ -118,14 +134,14 @@ Public Sub Start
 		ctx.Put("ROOT_PATH", mRootPath)
 		ctx.Put("SERVER_URL", mServerUrl)
 	End If
-	If Initialized(mCorsPath) And Initialized(mCorsSettings) Then
-		For Each path As String In mCorsPath
-			Me.As(JavaObject).RunMethod("addFilter", Array As Object(srvr.As(JavaObject).GetField("context"), path, mCorsSettings))
+	If Initialized(cors.Path) And Initialized(cors.Settings) Then
+		For Each path As String In cors.Path
+			Me.As(JavaObject).RunMethod("addFilter", Array As Object(srvr.As(JavaObject).GetField("context"), path, cors.Settings))
 		Next
 		If mLogEnabled Then	LogColor("CORS is enabled", COLOR_BLUE)
 	End If
-	srvr.StaticFilesFolder = mStaticFilesDir
-	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": mStaticFilesBrowsable))
+	srvr.StaticFilesFolder = static.Folder
+	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": static.Browsable))
 	srvr.Start
 End Sub
 
@@ -141,48 +157,12 @@ Public Sub getVersion As String
 	Return mVersion
 End Sub
 
-Public Sub setVersion (Version As String)
-	mVersion = Version
-End Sub
-
-Public Sub getStaticFilesFolder As String
-	Return mStaticFilesDir
-End Sub
-
-Public Sub setStaticFilesFolder (StaticFilesFolder As String)
-	mStaticFilesDir = StaticFilesFolder
-End Sub
-
-Public Sub getStaticFilesBrowsable As Boolean
-	Return mStaticFilesBrowsable
-End Sub
-
-Public Sub setStaticFilesBrowsable (StaticFilesBrowsable As Boolean)
-	mStaticFilesBrowsable = StaticFilesBrowsable
-End Sub
-
 Public Sub getPort As Int
 	Return mPort
 End Sub
 
 Public Sub setPort (Port As Int)
 	mPort = Port
-End Sub
-
-Public Sub getSslPort As Int
-	Return mSslPort
-End Sub
-
-Public Sub setSslPort (SslPort As Int)
-	mSslPort = SslPort
-End Sub
-
-Public Sub getRootPath As String
-	Return mRootPath
-End Sub
-
-Public Sub setRootPath (RootPath As String)
-	mRootPath = RootPath
 End Sub
 
 Public Sub getRootUrl As String
@@ -193,72 +173,16 @@ Public Sub setRootUrl (RootUrl As String)
 	mRootUrl = RootUrl
 End Sub
 
+Public Sub getRootPath As String
+	Return mRootPath
+End Sub
+
+Public Sub setRootPath (RootPath As String)
+	mRootPath = RootPath
+End Sub
+
 Public Sub getServerUrl As String
 	Return mServerUrl
-End Sub
-
-Public Sub getCorsPath As List
-	Return mCorsPath
-End Sub
-
-Public Sub setCorsPath (CorsPath As List)
-	mCorsPath = CorsPath
-End Sub
-
-Public Sub getCorsSettings As Map
-	Return mCorsSettings
-End Sub
-
-' Sample settings: <code>
-' CreateMap( _
-' "allowedOrigins": "*", _
-' "allowedHeaders": "*", _
-' "allowedMethods": "POST,PUT,DELETE", _
-' "allowCredentials": "true", _
-' "preflightMaxAge": 1800, _
-' "chainPreflight": "false")</code>
-Public Sub setCorsSettings (CorsSettings As Map)
-	mCorsSettings = CorsSettings
-End Sub
-
-Public Sub getApiName As String
-	Return mApiName
-End Sub
-
-Public Sub setApiName (ApiName As String)
-	mApiName = ApiName
-End Sub
-
-Public Sub getApiVersioning As Boolean
-	Return mApiVersioning
-End Sub
-
-Public Sub setApiVersioning (ApiVersioning As Boolean)
-	mApiVersioning = ApiVersioning
-End Sub
-
-Public Sub getCORSEnabled As Boolean
-	Return mCORSEnabled
-End Sub
-
-Public Sub setCORSEnabled (Enabled As Boolean)
-	mCORSEnabled = Enabled
-End Sub
-
-Public Sub getHelpEnabled As Boolean
-	Return mHelpEnabled
-End Sub
-
-Public Sub setHelpEnabled (Enabled As Boolean)
-	mHelpEnabled = Enabled
-End Sub
-
-Public Sub getSslEnabled As Boolean
-	Return mSslEnabled
-End Sub
-
-Public Sub setSslEnabled (Enabled As Boolean)
-	mSslEnabled = Enabled
 End Sub
 
 Public Sub getLogEnabled As Boolean
@@ -269,6 +193,7 @@ Public Sub setLogEnabled (Enabled As Boolean)
 	mLogEnabled = Enabled
 End Sub
 
+' Use config file to override app settings if the file contains the key
 Public Sub getUseConfigFile As Boolean
 	Return mUseConfigFile
 End Sub
@@ -282,7 +207,7 @@ Public Sub setRedirectToHttps (Enabled As Boolean)
 End Sub
 
 Public Sub ShowLog
-	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(mSslPort > 0, $" (redirected to port ${mSslPort})"$, "")}"$
+	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0, $" (redirected to port ${ssl.Port})"$, "")}"$
 	Log(mMessage)
 End Sub
 

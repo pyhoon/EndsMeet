@@ -1,4 +1,4 @@
 Author=Aeric
-Version=0.90
+Version=0.93
 B4J.DependsOn=JavaObject, jServer
 Supported Platforms=B4J

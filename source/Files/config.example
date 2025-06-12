@@ -1,5 +1,5 @@
 # Product: 		EndsMeet Server
-# Version: 		0.90
+# Version: 		0.93
 # License:		MIT License
 # Developer:	Poon Yip Hoon (Aeric)
 # Donation:		https://paypal.me/aeric80/
@@ -10,12 +10,27 @@
 # Lines starting with '#' are comments.
 # Backslash character at the end of line means that the command continues in the next line.
 
+# Path settings
 ROOT_URL=http://127.0.0.1
 ROOT_PATH=
+
+# API settings
 API_NAME=api
-API_VERSIONING=False
-ServerPort=8080
-SSLPort=0
+#API_VERSIONING=False
+#API_VERBOSE_MODE=True
+#API_ORDERED_KEYS=True
+
+# Server port
+PORT=8080
+
+# SSL Settings
+# Generate a keystore from Windows CMD
+# C:\Java\jdk-11.0.1\bin\keytool -keystore keystore -alias jetty -genkey -keyalg RSA
+# Copy keystore file to Objects folder of the B4J project
+SSL_PORT=0
+SSL_KEYSTORE_DIR=/etc/letsencrypt/live/mydomain.com
+SSL_KEYSTORE_FILE=keystore.jks
+SSL_KEYSTORE_PASSWORD=xxxxxxxxx
 
 # Define App Constants
 HOME_TITLE=ENDSMEET SERVER

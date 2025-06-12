@@ -5,7 +5,7 @@ Type=Class
 Version=10.2
 @EndOfDesignText@
 'Help Handler class
-'Version 0.90
+'Version 0.93
 Sub Class_Globals
 	Private Request As ServletRequest 'ignore
 	Private Response As ServletResponse
@@ -291,10 +291,10 @@ Private Sub ExtractParams (methodLine As String) As String
 End Sub
 
 Private Sub GenerateLink (ApiVersion As String, Handler As String, Elements As List) As String
-	Dim Link As String = "$SERVER_URL$/" & Main.app.ApiName
+	Dim Link As String = "$SERVER_URL$/" & Main.app.api.Name
 	If Link.EndsWith("/") = False Then Link = Link & "/"
 	If ApiVersion.EqualsIgnoreCase("null") = False Then
-		If Main.app.ApiVersioning Then Link = Link & ApiVersion
+		If Main.app.api.Versioning Then Link = Link & ApiVersion
 		If Link.EndsWith("/") = False Then Link = Link & "/"
 	End If
 	Link = Link & Handler.ToLowerCase
