@@ -12,6 +12,7 @@ Sub Class_Globals
 	Public cors 					As CorsSettings
 	Public email 					As EmailSettings
 	Public static 					As StaticFilesSettings
+	Public routes					As List
 	Private mPort 					As Int
 	Private mRootUrl 				As String
 	Private mRootPath 				As String
@@ -28,6 +29,7 @@ Sub Class_Globals
 	Type EmailSettings (SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
 	Type CorsSettings (Enabled As Boolean, Path As List, Settings As Map)
 	Type StaticFilesSettings (Folder As String, Browsable As Boolean)
+	Type Route (Method As String, Path As String, Class As String)
 End Sub
 
 Public Sub Initialize
@@ -37,16 +39,84 @@ Public Sub Initialize
 	cors.Initialize
 	email.Initialize
 	static.Initialize
+	routes.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "0.93"
+	mVersion = "0.96"
 	mRootUrl = "http://127.0.0.1"
 	api.Name = "api"
 	static.Folder = File.Combine(File.DirApp, "www")
 End Sub
 
+' Add path and class to server object and add as GET method
 Public Sub Route (Path As String, Class As String)
 	srvr.AddHandler(Path, Class, False)
+	routes.Add(CreateRoute("GET", Path, Class))
+End Sub
+
+' Similar to Route but check is path and class already added before adding to server object (Experimental)
+Public Sub Get (Path As String, Class As String)
+	If HandlerAdded(Path, Class) = False Then
+		srvr.AddHandler(Path, Class, False)
+	End If
+	routes.Add(CreateRoute("GET", Path, Class))
+End Sub
+
+Public Sub Post (Path As String, Class As String)
+	If HandlerAdded(Path, Class) = False Then
+		srvr.AddHandler(Path, Class, False)
+	End If
+	routes.Add(CreateRoute("POST", Path, Class))
+End Sub
+
+Public Sub Put (Path As String, Class As String)
+	If HandlerAdded(Path, Class) = False Then
+		srvr.AddHandler(Path, Class, False)
+	End If
+	routes.Add(CreateRoute("PUT", Path, Class))
+End Sub
+
+Public Sub Delete (Path As String, Class As String)
+	If HandlerAdded(Path, Class) = False Then
+		srvr.AddHandler(Path, Class, False)
+	End If
+	routes.Add(CreateRoute("DELETE", Path, Class))
+End Sub
+
+Private Sub HandlerAdded (Path As String, Class As String) As Boolean
+	For Each rt As Route In routes
+		If rt.Path.EqualsIgnoreCase(Path) And rt.Class.EqualsIgnoreCase(Class) Then
+			Return True
+		End If
+	Next
+	Return False
+End Sub
+
+Public Sub MethodAvailable (Method As String, Path As String, Class As String) As Boolean
+	For Each rt As Route In routes
+		'Log(rt)
+		If rt.Method.EqualsIgnoreCase(Method) And _
+			rt.Path.EqualsIgnoreCase(Path) And _
+			rt.Class.EqualsIgnoreCase(Class) Then
+			Return True
+		End If
+	Next
+	Return False
+End Sub
+
+Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) As Boolean
+	Dim jo As JavaObject
+	jo.InitializeStatic("anywheresoftware.b4a.BA")
+	Dim PackageName As String = jo.GetField("packageName")
+	Dim Handler As String = GetType(Class).Replace(PackageName & ".", "")
+	For Each rt As Route In routes
+		If rt.Method.EqualsIgnoreCase(Method) And _
+			rt.Path.EqualsIgnoreCase(Path) And _
+			rt.Class.EqualsIgnoreCase(Handler) Then
+			Return True
+		End If
+	Next
+	Return False
 End Sub
 
 Public Sub Start
@@ -87,7 +157,6 @@ Public Sub Start
 		mPort = srvr.Port
 		If mLogEnabled Then	LogColor($"Server Port is not set (default to ${mPort})"$, COLOR_RED)
 	End If
-
 	If ssl.Port = 0 Then
 		ssl.Enabled = False
 		If mPort <> 80 Then
@@ -209,6 +278,15 @@ End Sub
 Public Sub ShowLog
 	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0, $" (redirected to port ${ssl.Port})"$, "")}"$
 	Log(mMessage)
+End Sub
+
+Public Sub CreateRoute (Method As String, Path As String, Class As String) As Route
+	Dim t1 As Route
+	t1.Initialize
+	t1.Method = Method
+	t1.Path = Path
+	t1.Class = Class
+	Return t1
 End Sub
 
 #If JAVA

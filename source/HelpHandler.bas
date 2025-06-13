@@ -5,7 +5,7 @@ Type=Class
 Version=10.2
 @EndOfDesignText@
 'Help Handler class
-'Version 0.93
+'Version 0.96
 Sub Class_Globals
 	Private Request As ServletRequest 'ignore
 	Private Response As ServletResponse
@@ -110,8 +110,10 @@ Private Sub BuildMethods
 	Method.Put("Desc", "Test API")
 	AllMethods.Add(Method)
 	
-	Dim Method As Map = CreateMethodProperties("", "PutAPI")
+	Dim Method As Map = CreateMethodProperties("", "UpdateAPI")
 	Method.Put("Desc", "Test API")
+	'Method.Put("Elements", $"[":id"]"$)
+	Method.Put("Verb", "PUT")
 	AllMethods.Add(Method)
 End Sub
 
