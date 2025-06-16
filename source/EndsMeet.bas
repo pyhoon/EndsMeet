@@ -11,7 +11,7 @@ Sub Class_Globals
 	Public ssl 						As SslSettings
 	Public cors 					As CorsSettings
 	Public email 					As EmailSettings
-	Public static 					As StaticFilesSettings
+	Public staticfiles 				As StaticFilesSettings
 	Public routes					As List
 	Private mPort 					As Int
 	Private mRootUrl 				As String
@@ -38,14 +38,14 @@ Public Sub Initialize
 	ssl.Initialize
 	cors.Initialize
 	email.Initialize
-	static.Initialize
+	staticfiles.Initialize
 	routes.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "0.96"
+	mVersion = "0.97"
 	mRootUrl = "http://127.0.0.1"
 	api.Name = "api"
-	static.Folder = File.Combine(File.DirApp, "www")
+	staticfiles.Folder = File.Combine(File.DirApp, "www")
 End Sub
 
 ' Add path and class to server object and add as GET method
@@ -209,8 +209,8 @@ Public Sub Start
 		Next
 		If mLogEnabled Then	LogColor("CORS is enabled", COLOR_BLUE)
 	End If
-	srvr.StaticFilesFolder = static.Folder
-	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": static.Browsable))
+	srvr.StaticFilesFolder = staticfiles.Folder
+	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": staticfiles.Browsable))
 	srvr.Start
 End Sub
 

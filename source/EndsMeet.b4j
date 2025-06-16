@@ -19,7 +19,7 @@ Version=10.2
 @EndOfDesignText@
 #Region Project Attributes
 ' Product: 				EndsMeet
-' Version: 				0.96
+' Version: 				0.97
 ' License:				MIT License
 ' GitHub:				https://github.com/pyhoon/EndsMeet
 ' Donation:				PayPal (https://paypal.me/aeric80/)
@@ -32,7 +32,6 @@ Version=10.2
 Sub Process_Globals
 	Public app As EndsMeet
 	Private Const VERSION As String = "1.00"
-	
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
