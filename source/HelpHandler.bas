@@ -5,7 +5,7 @@ Type=Class
 Version=10.2
 @EndOfDesignText@
 'Help Handler class
-'Version 0.97
+'Version 1.00
 Sub Class_Globals
 	Private Request As ServletRequest 'ignore
 	Private Response As ServletResponse
@@ -80,7 +80,7 @@ Private Sub RetrieveMethod (GroupName As String, MethodLine As String) As Map 'i
 	End If
 End Sub
 
-' Use this sub if you are calling BuildMethods after calling ReadHandlers in Debug to override method properties
+' Use this sub if you are calling BuildMethods after calling ReadHandlers in Debug to overide method properties
 ' Order in list is preserved
 Private Sub ReplaceMethod (Method As Map) 'ignore
 	' Replacement will failed if the Method name cannot be found
@@ -257,7 +257,7 @@ Private Sub ExtractVerb (methodLine As String) As String
 	Else If methodLine.ToUpperCase.StartsWith("DELETE") Then
 		MethodVerb = "DELETE"
 	End If
-	' Override if #hashtag comment exists
+	' Overide if #hashtag comment exists
 	Select True
 		Case methodLine.ToUpperCase.Contains("#GET")
 			MethodVerb = "GET"
@@ -332,13 +332,6 @@ Private Sub GenerateVerbSection (section As VerbSection) As String
 			$"<span style="width: 50px" class="badge rounded-pill pill-yellow pill-yellow-text px-2 py-1">${WebApiUtils.ProperCase(section.Authenticate)}</span>"$, "")}<span class="ml-1">${section.Description}</span>
 		</button>
         <div class="details mb-1">
-            <!--<div class="row">
-                <div class="col-md-6 pt-3">
-                    ${IIf(section.Authenticate.EqualsIgnoreCase("Basic") Or section.Authenticate.EqualsIgnoreCase("Token"), _
-                    $"<span class="badge rounded-pill bg-info text-white px-2 py-1">${WebApiUtils.ProperCase(section.Authenticate)} Authentication</span><br>"$, "")}
-                    ${section.Description}
-                </div>
-            </div>-->
             <div class="row">
                 <div class="col-md-3 p-3">
                     <p><strong>Parameters</strong><br/>

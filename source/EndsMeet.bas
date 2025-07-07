@@ -42,48 +42,46 @@ Public Sub Initialize
 	routes.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "0.97"
+	mVersion = "1.00"
 	mRootUrl = "http://127.0.0.1"
 	api.Name = "api"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
 End Sub
 
-' Add path and class to server object and add as GET method
-Public Sub Route (Path As String, Class As String)
-	srvr.AddHandler(Path, Class, False)
-	routes.Add(CreateRoute("GET", Path, Class))
-End Sub
-
-' Similar to Route but check is path and class already added before adding to server object (Experimental)
+' Add path and class which allows GET method 
 Public Sub Get (Path As String, Class As String)
-	If HandlerAdded(Path, Class) = False Then
+	If RouteAdded(Path, Class) = False Then
 		srvr.AddHandler(Path, Class, False)
 	End If
 	routes.Add(CreateRoute("GET", Path, Class))
 End Sub
 
+' Add path and class which allows POST method 
 Public Sub Post (Path As String, Class As String)
-	If HandlerAdded(Path, Class) = False Then
+	If RouteAdded(Path, Class) = False Then
 		srvr.AddHandler(Path, Class, False)
 	End If
 	routes.Add(CreateRoute("POST", Path, Class))
 End Sub
 
+' Add path and class which allows PUT method 
 Public Sub Put (Path As String, Class As String)
-	If HandlerAdded(Path, Class) = False Then
+	If RouteAdded(Path, Class) = False Then
 		srvr.AddHandler(Path, Class, False)
 	End If
 	routes.Add(CreateRoute("PUT", Path, Class))
 End Sub
 
+' Add path and class which allows DELETE method 
 Public Sub Delete (Path As String, Class As String)
-	If HandlerAdded(Path, Class) = False Then
+	If RouteAdded(Path, Class) = False Then
 		srvr.AddHandler(Path, Class, False)
 	End If
 	routes.Add(CreateRoute("DELETE", Path, Class))
 End Sub
 
-Private Sub HandlerAdded (Path As String, Class As String) As Boolean
+' Checks route is added
+Private Sub RouteAdded (Path As String, Class As String) As Boolean
 	For Each rt As Route In routes
 		If rt.Path.EqualsIgnoreCase(Path) And rt.Class.EqualsIgnoreCase(Class) Then
 			Return True
@@ -92,9 +90,9 @@ Private Sub HandlerAdded (Path As String, Class As String) As Boolean
 	Return False
 End Sub
 
+' Check http method allowed for the given path and class name
 Public Sub MethodAvailable (Method As String, Path As String, Class As String) As Boolean
 	For Each rt As Route In routes
-		'Log(rt)
 		If rt.Method.EqualsIgnoreCase(Method) And _
 			rt.Path.EqualsIgnoreCase(Path) And _
 			rt.Class.EqualsIgnoreCase(Class) Then
@@ -104,6 +102,7 @@ Public Sub MethodAvailable (Method As String, Path As String, Class As String) A
 	Return False
 End Sub
 
+' Check http method allowed for the given path and class object (e.g by passing Me as Class)
 Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) As Boolean
 	Dim jo As JavaObject
 	jo.InitializeStatic("anywheresoftware.b4a.BA")
@@ -119,6 +118,7 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 	Return False
 End Sub
 
+' Starts the server
 Public Sub Start
 	If mUseConfigFile Then
 		If File.Exists(File.DirApp, "config.ini") = False Then
@@ -262,7 +262,7 @@ Public Sub setLogEnabled (Enabled As Boolean)
 	mLogEnabled = Enabled
 End Sub
 
-' Use config file to override app settings if the file contains the key
+' Use config file to overide app settings if the file contains the key
 Public Sub getUseConfigFile As Boolean
 	Return mUseConfigFile
 End Sub
@@ -275,7 +275,8 @@ Public Sub setRedirectToHttps (Enabled As Boolean)
 	mRedirect = Enabled
 End Sub
 
-Public Sub ShowLog
+' Show startup message
+Public Sub LogStartupMessage
 	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0, $" (redirected to port ${ssl.Port})"$, "")}"$
 	Log(mMessage)
 End Sub

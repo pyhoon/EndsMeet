@@ -23,10 +23,6 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	Method = Request.Method.ToUpperCase
 	Dim FullElements() As String = WebApiUtils.GetUriElements(Request.RequestURI)
 	Elements = WebApiUtils.CropElements(FullElements, 1) ' 1 For Index handler
-	'If Method <> "GET" And Method <> "POST" Then
-	'	WebApiUtils.ReturnMethodNotAllow(HRM, Response)
-	'	Return
-	'End If
 	If ElementMatch("") Then
 		ShowIndexPage
 		Return

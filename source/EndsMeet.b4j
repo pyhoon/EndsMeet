@@ -15,11 +15,11 @@ Module4=Index
 NumberOfFiles=2
 NumberOfLibraries=3
 NumberOfModules=4
-Version=10.2
+Version=10.3
 @EndOfDesignText@
 #Region Project Attributes
 ' Product: 				EndsMeet
-' Version: 				0.97
+' Version: 				1.00
 ' License:				MIT License
 ' GitHub:				https://github.com/pyhoon/EndsMeet
 ' Donation:				PayPal (https://paypal.me/aeric80/)
@@ -37,11 +37,11 @@ End Sub
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	app.Initialize
-	app.Route("", "Index")
-	app.Route("/modal", "Index")
+	app.Get("", "Index")
+	app.Get("/modal", "Index")
 	app.Get("/api/*", "Index")
 	app.Put("/api/*", "Index")
-	app.Route("/help", "HelpHandler")
+	app.Get("/help", "HelpHandler")
 	'app.api.EnableHelp = True
 	app.cors.Path = Array("*")
 	app.cors.Settings = CreateMap( _
@@ -54,7 +54,7 @@ Sub AppStart (Args() As String)
 	app.LogEnabled = True
 	app.UseConfigFile = True
 	app.Start
-	app.ShowLog
+	app.LogStartupMessage 'optional
 	app.ctx.Put("VERSION", VERSION)
 	Log($"App version: ${app.ctx.Get("VERSION")}"$)
 	StartMessageLoop
