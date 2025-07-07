@@ -24,19 +24,22 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	Dim FullElements() As String = WebApiUtils.GetUriElements(Request.RequestURI)
 	Elements = WebApiUtils.CropElements(FullElements, 1) ' 1 For Index handler
 	If ElementMatch("") Then
-		ShowIndexPage
-		Return
+		If Main.app.MethodAvailable(Method, "", "index") Then
+			ShowIndexPage
+			Return
+		End If
 	End If
 	If ElementMatch("key") Then
 		Select ElementKey
 			Case "modal"
+				If Main.app.MethodAvailable2(Method, "/modal", Me) = False Then
+					WebApiUtils.ReturnHtmlMethodNotAllowed(Response)
+					Return
+				End If
 				WebApiUtils.ReturnHtml(GenerateModal, Response)
 				Return
 			Case "api"
-				If Main.app.MethodAvailable(Method, "/api/*", "index") Then
-					Log("Allowed")
-				Else
-					Log("Not Allowed")
+				If Main.app.MethodAvailable2(Method, "/api/*", Me) = False Then
 					WebApiUtils.ReturnMethodNotAllow(HRM, Response)
 					Return
 				End If
@@ -99,7 +102,7 @@ Sub GenerateIndex As String
 	"role": "document")).up(div3)
 	DIV.attribute("class", "modal-content").up(div4)
 	
-	Button.attribute2(CreateMap("hx-get": "/modal", _
+	Button.attribute2(CreateMap("hx-post": "/modal", _
 	"hx-target": "#modals-here", _
 	"hx-trigger": "click", _
 	"data-bs-toggle": "modal", _

@@ -38,7 +38,7 @@ End Sub
 Sub AppStart (Args() As String)
 	app.Initialize
 	app.Get("", "Index")
-	app.Get("/modal", "Index")
+	app.Post("/modal", "Index")
 	app.Get("/api/*", "Index")
 	app.Put("/api/*", "Index")
 	app.Get("/help", "HelpHandler")
