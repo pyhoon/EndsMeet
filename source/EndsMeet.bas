@@ -42,7 +42,7 @@ Public Sub Initialize
 	routes.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "1.00"
+	mVersion = "1.10"
 	mRootUrl = "http://127.0.0.1"
 	api.Name = "api"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
@@ -186,15 +186,19 @@ Public Sub Start
 					srvr.AddFilter("/*", "HttpsFilter", False)
 					mRootUrl = mRootUrl.Replace("http:", "https:")
 					ctx.Put("ROOT_URL", mRootUrl)
-				End If
-				If mPort <> 443 Then
-					mServerUrl = mRootUrl & ":" & ssl.Port
-					ctx.Put("SERVER_URL", mServerUrl)
+					If mPort = 443 Then
+						mServerUrl = mRootUrl
+					Else
+						mServerUrl = mRootUrl & ":" & ssl.Port
+					End If
+				Else
+					mServerUrl = mRootUrl & ":" & mPort
 				End If
 				ssl.Enabled = True
 				If mLogEnabled Then	LogColor("SSL is enabled", COLOR_BLUE)
 			End If
 		End If
+		ctx.Put("SERVER_URL", mServerUrl)
 	End If
 	If mRootPath <> "" Then
 		If mRootPath.StartsWith("/") = False Then mRootPath = "/" & mRootPath
@@ -277,7 +281,7 @@ End Sub
 
 ' Show startup message
 Public Sub LogStartupMessage
-	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0, $" (redirected to port ${ssl.Port})"$, "")}"$
+	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0 And mRedirect, $" (redirected to port ${ssl.Port})"$, "")}"$
 	Log(mMessage)
 End Sub
 
