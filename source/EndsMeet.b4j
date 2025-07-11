@@ -9,12 +9,10 @@ Library1=jcore
 Library2=minihtml
 Library3=webapiutils
 Module1=EndsMeet
-Module2=HelpHandler
-Module3=HttpsFilter
-Module4=Index
+Module2=Index
 NumberOfFiles=2
 NumberOfLibraries=3
-NumberOfModules=4
+NumberOfModules=2
 Version=10.3
 @EndOfDesignText@
 #Region Project Attributes
