@@ -17,7 +17,7 @@ Version=10.3
 @EndOfDesignText@
 #Region Project Attributes
 ' Product: 				EndsMeet
-' Version: 				1.10
+' Version: 				1.20
 ' License:				MIT License
 ' GitHub:				https://github.com/pyhoon/EndsMeet
 ' Donation:				PayPal (https://paypal.me/aeric80/)
@@ -39,8 +39,6 @@ Sub AppStart (Args() As String)
 	app.Post("/modal", "Index")
 	app.Get("/api/*", "Index")
 	app.Put("/api/*", "Index")
-	app.Get("/help", "HelpHandler")
-	'app.api.EnableHelp = True
 	'app.cors.Path = Array("*")
 	'app.cors.Settings = CreateMap( _
 	'"allowedOrigins": "*", _
@@ -51,9 +49,12 @@ Sub AppStart (Args() As String)
 	'"chainPreflight": "false")
 	'app.LogEnabled = True
 	'app.UseConfigFile = True
+	app.LoadConfig
 	app.Start
 	app.LogStartupMessage 'optional
 	'app.ctx.Put("VERSION", VERSION)
 	'Log($"App version: ${app.ctx.Get("VERSION")}"$)
+	'Log(app.ctx)
+	Log(app.api)
 	StartMessageLoop
 End Sub

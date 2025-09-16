@@ -2,8 +2,14 @@
 Group=Classes
 ModulesStructureVersion=1
 Type=Class
-Version=10.2
+Version=10.3
 @EndOfDesignText@
+' Product:		EndsMeet
+' Version:		1.20
+' License:		MIT License
+' GitHub:		https://github.com/pyhoon/EndsMeet
+' Donation:	PayPal (https://paypal.me/aeric80/)
+' Developer:	Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
 Sub Class_Globals
 	Public ctx 						As Map
 	Public srvr 					As Server
@@ -14,14 +20,15 @@ Sub Class_Globals
 	Public staticfiles 				As StaticFilesSettings
 	Public routes					As List
 	Private mPort 					As Int
+	Private mMessage 				As String
+	Private mVersion				As String
 	Private mRootUrl 				As String
 	Private mRootPath 				As String
 	Private mServerUrl 				As String
-	Private mMessage 				As String
-	Private mVersion				As String
+	Private mConfigFile				As String
 	Private mRedirect 				As Boolean
 	Private mLogEnabled 			As Boolean
-	Private mUseConfigFile			As Boolean
+	Private mRemoveUnusedConfig		As Boolean
 	Private Const COLOR_RED 		As Int = -65536
 	Private Const COLOR_BLUE 		As Int = -16776961
 	Type ApiSettings (Name As String, Versioning As Boolean, PayloadType As String, ContentType As String, EnableHelp As Boolean, VerboseMode As Boolean, OrderedKeys As Boolean)
@@ -38,13 +45,15 @@ Public Sub Initialize
 	ssl.Initialize
 	cors.Initialize
 	email.Initialize
-	staticfiles.Initialize
 	routes.Initialize
+	staticfiles.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "1.10"
-	mRootUrl = "http://127.0.0.1"
 	api.Name = "api"
+	mVersion = "1.20"
+	mConfigFile = "config.ini"
+	mRemoveUnusedConfig = True
+	mRootUrl = "http://127.0.0.1"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
 End Sub
 
@@ -118,29 +127,33 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 	Return False
 End Sub
 
+' Load from config file
+Public Sub LoadConfig
+	If File.Exists(File.DirApp, mConfigFile) = False Then
+		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
+	End If
+	ctx = File.ReadMap(File.DirApp, mConfigFile)
+	If ctx.ContainsKey("PORT") Then mPort = ctx.Get("PORT")
+	If ctx.ContainsKey("SSL_PORT") Then ssl.Port = ctx.Get("SSL_PORT")
+	If ctx.ContainsKey("SSL_KEYSTORE_DIR") Then ssl.KeystoreDir = ctx.Get("SSL_KEYSTORE_DIR")
+	If ctx.ContainsKey("SSL_KEYSTORE_FILE") Then ssl.KeystoreFile = ctx.Get("SSL_KEYSTORE_FILE")
+	If ctx.ContainsKey("SSL_KEYSTORE_PASSWORD") Then ssl.KeystorePassword = ctx.Get("SSL_KEYSTORE_PASSWORD")
+	If ctx.ContainsKey("ROOT_URL") Then mRootUrl = ctx.Get("ROOT_URL")
+	If ctx.ContainsKey("ROOT_PATH") Then mRootPath = ctx.Get("ROOT_PATH")
+	If ctx.ContainsKey("API_NAME") Then api.Name = ctx.Get("API_NAME")
+	If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
+	If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
+	If ctx.ContainsKey("API_ORDERED_KEYS") Then api.OrderedKeys = ctx.Get("API_ORDERED_KEYS").As(String).EqualsIgnoreCase("True")
+End Sub
+
 ' Starts the server
 Public Sub Start
-	If mUseConfigFile Then
-		If File.Exists(File.DirApp, "config.ini") = False Then
-			File.Copy(File.DirAssets, "config.example", File.DirApp, "config.ini")
-		End If
-		ctx = File.ReadMap(File.DirApp, "config.ini")
-		If ctx.ContainsKey("PORT") Then mPort = ctx.Get("PORT")
-		If ctx.ContainsKey("SSL_PORT") Then ssl.Port = ctx.Get("SSL_PORT")
-		If ctx.ContainsKey("SSL_KEYSTORE_DIR") Then ssl.KeystoreDir = ctx.Get("SSL_KEYSTORE_DIR")
-		If ctx.ContainsKey("SSL_KEYSTORE_FILE") Then ssl.KeystoreFile = ctx.Get("SSL_KEYSTORE_FILE")
-		If ctx.ContainsKey("SSL_KEYSTORE_PASSWORD") Then ssl.KeystorePassword = ctx.Get("SSL_KEYSTORE_PASSWORD")
-		If ctx.ContainsKey("ROOT_URL") Then mRootUrl = ctx.Get("ROOT_URL")
-		If ctx.ContainsKey("ROOT_PATH") Then mRootPath = ctx.Get("ROOT_PATH")
-		If ctx.ContainsKey("API_NAME") Then api.Name = ctx.Get("API_NAME")
-		If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
-		If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
-		If ctx.ContainsKey("API_ORDERED_KEYS") Then api.OrderedKeys = ctx.Get("API_ORDERED_KEYS").As(String).EqualsIgnoreCase("True")
-		mServerUrl = mRootUrl
-		' Update useful keys
-		ctx.Put("ROOT_URL", mRootUrl)
-		ctx.Put("ROOT_PATH", mRootPath)
-		' Remove unused keys
+	mServerUrl = mRootUrl
+	' Update useful keys
+	ctx.Put("ROOT_URL", mRootUrl)
+	ctx.Put("ROOT_PATH", mRootPath)
+	' Remove unused keys
+	If mRemoveUnusedConfig Then
 		ctx.Remove("PORT")
 		ctx.Remove("SSL_PORT")
 		ctx.Remove("SSL_KEYSTORE_DIR")
@@ -266,13 +279,22 @@ Public Sub setLogEnabled (Enabled As Boolean)
 	mLogEnabled = Enabled
 End Sub
 
-' Use config file to overide app settings if the file contains the key
-Public Sub getUseConfigFile As Boolean
-	Return mUseConfigFile
+' Remove unused config keys in ctx
+Public Sub getRemoveUnusedConfig As Boolean
+	Return mRemoveUnusedConfig
 End Sub
 
-Public Sub setUseConfigFile (Enabled As Boolean)
-	mUseConfigFile = Enabled
+Public Sub setRemoveUnusedConfig (Enabled As Boolean)
+	mRemoveUnusedConfig = Enabled
+End Sub
+
+' Set config file name
+Public Sub getConfigFile As String
+	Return mConfigFile
+End Sub
+
+Public Sub setConfigFile (FileName As String)
+	mConfigFile = FileName
 End Sub
 
 Public Sub setRedirectToHttps (Enabled As Boolean)
