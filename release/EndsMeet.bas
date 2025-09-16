@@ -49,12 +49,15 @@ Public Sub Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	api.Name = "api"
 	mVersion = "1.20"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
+	api.Name = "api"
+	api.VerboseMode = True
+	api.PayloadType = "application/json"
+	api.ContentType = "application/json"
 End Sub
 
 ' Add path and class which allows GET method 
@@ -128,6 +131,8 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 End Sub
 
 ' Load from config file
+' e.g PORT, SSL_PORT, ROOT_URL, ROOT_PATH,
+' API_VERBOSE_MODE, API_ORDERED_KEYS
 Public Sub LoadConfig
 	If File.Exists(File.DirApp, mConfigFile) = False Then
 		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
