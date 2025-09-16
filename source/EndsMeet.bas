@@ -128,6 +128,8 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 End Sub
 
 ' Load from config file
+' e.g PORT, SSL_PORT, ROOT_URL, ROOT_PATH,
+' API_VERBOSE_MODE, API_ORDERED_KEYS
 Public Sub LoadConfig
 	If File.Exists(File.DirApp, mConfigFile) = False Then
 		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
