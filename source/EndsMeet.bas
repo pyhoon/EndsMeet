@@ -54,10 +54,6 @@ Public Sub Initialize
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
-	api.Name = "api"
-	api.VerboseMode = True
-	api.PayloadType = "application/json"
-	api.ContentType = "application/json"
 End Sub
 
 ' Add path and class which allows GET method 

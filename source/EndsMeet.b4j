@@ -22,7 +22,8 @@ Version=10.3
 ' GitHub:				https://github.com/pyhoon/EndsMeet
 ' Donation:				PayPal (https://paypal.me/aeric80/)
 ' Developer:			Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
-' Objects folder: 		ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\Objects
+#Macro: Title, Release, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
+#Macro: Title, Publish, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..\..\release&Args=-cMf&Args=%ADDITIONAL%\%PROJECT_NAME%.b4xlib&Args=*
 #CommandLineArgs:
 #MergeLibraries: True
 #End Region
