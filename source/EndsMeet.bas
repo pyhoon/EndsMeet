@@ -57,7 +57,7 @@ Public Sub Initialize
 	api.Name = "api"
 	api.VerboseMode = True
 	api.PayloadType = "application/json"
-	api.ContentType = "application/json"	
+	api.ContentType = "application/json"
 End Sub
 
 ' Add path and class which allows GET method 
