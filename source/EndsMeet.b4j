@@ -30,33 +30,33 @@ Version=10.3
 #End Region
 
 Sub Process_Globals
-	Public app As EndsMeet
+	Public App As EndsMeet
 	'Private Const VERSION As String = "1.00"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
-	app.Initialize
-	app.Get("", "Index")
-	app.Post("/modal", "Index")
-	app.Get("/api/*", "Index")
-	app.Put("/api/*", "Index")
-	'app.cors.Path = Array("*")
-	'app.cors.Settings = CreateMap( _
+	App.Initialize
+	App.Get("", "Index")
+	App.Post("/modal", "Index")
+	App.Get("/api/*", "Index")
+	App.Put("/api/*", "Index")
+	'App.cors.Path = Array("*")
+	'App.cors.Settings = CreateMap( _
 	'"allowedOrigins": "*", _
 	'"allowedHeaders": "*", _
 	'"allowedMethods": "*", _
 	'"allowCredentials": "true", _
 	'"preflightMaxAge": 1800, _
 	'"chainPreflight": "false")
-	'app.LogEnabled = True
-	'app.UseConfigFile = True
-	app.LoadConfig
-	app.Start
-	app.LogStartupMessage 'optional
-	'app.ctx.Put("VERSION", VERSION)
-	'Log($"App version: ${app.ctx.Get("VERSION")}"$)
-	'Log(app.ctx)
-	Log(app.api)
+	'App.LogEnabled = True
+	'App.UseConfigFile = True
+	App.LoadConfig
+	App.Start
+	App.LogStartupMessage 'optional
+	'App.ctx.Put("VERSION", VERSION)
+	'Log($"App version: ${App.ctx.Get("VERSION")}"$)
+	'Log(App.ctx)
+	Log(App.api)
 	StartMessageLoop
 End Sub

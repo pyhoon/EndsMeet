@@ -24,7 +24,7 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	Dim FullElements() As String = WebApiUtils.GetUriElements(Request.RequestURI)
 	Elements = WebApiUtils.CropElements(FullElements, 1) ' 1 For Index handler
 	If ElementMatch("") Then
-		If Main.app.MethodAvailable(Method, "", "index") Then
+		If Main.App.MethodAvailable(Method, "", "index") Then
 			ShowIndexPage
 			Return
 		End If
@@ -32,14 +32,14 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	If ElementMatch("key") Then
 		Select ElementKey
 			Case "modal"
-				If Main.app.MethodAvailable2(Method, "/modal", Me) = False Then
+				If Main.App.MethodAvailable2(Method, "/modal", Me) = False Then
 					WebApiUtils.ReturnHtmlMethodNotAllowed(Response)
 					Return
 				End If
 				WebApiUtils.ReturnHtml(GenerateModal, Response)
 				Return
 			Case "api"
-				If Main.app.MethodAvailable2(Method, "/api/*", Me) = False Then
+				If Main.App.MethodAvailable2(Method, "/api/*", Me) = False Then
 					WebApiUtils.ReturnMethodNotAllow(HRM, Response)
 					Return
 				End If
