@@ -2,6 +2,7 @@
 $APPNAME$.b4j.meta
 Objects/config.ini
 Objects/help.html
+Objects/*.log
 Objects/*.jar
 Objects/*.db*
 Objects/keystore*
