@@ -46,8 +46,6 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 				HRM.ResponseCode = 200
 				HRM.ResponseMessage = "Success"
 				HRM.ResponseData = Array()
-				HRM.VerboseMode = True
-				HRM.OrderedKeys = True
 				WebApiUtils.ReturnHttpResponse(HRM, Response)
 				Return
 		End Select

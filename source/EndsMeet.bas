@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:		EndsMeet
-' Version:		1.30
+' Version:		1.40
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:	PayPal (https://paypal.me/aeric80/)
@@ -49,13 +49,14 @@ Public Sub Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
 	mPort = 8080
-	mVersion = "1.30"
+	mVersion = "1.40"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
 	staticfiles.Folder = File.Combine(File.DirApp, "www")
 	api.Name = "api"
 	api.VerboseMode = True
+	api.OrderedKeys = True
 	api.PayloadType = "application/json"
 	api.ContentType = "application/json"
 End Sub
@@ -234,15 +235,6 @@ Public Sub Start
 	srvr.StaticFilesFolder = staticfiles.Folder
 	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": staticfiles.Browsable))
 	srvr.Start
-End Sub
-
-' Set values from ApiSettings to HttpResponseMessage
-Public Sub SetApiMessage (Message As HttpResponseMessage, Settings As ApiSettings) As HttpResponseMessage
-	Message.VerboseMode = Settings.VerboseMode
-	Message.OrderedKeys = Settings.OrderedKeys
-	Message.ContentType = Settings.ContentType
-	Message.PayloadType = Settings.PayloadType
-	Return Message
 End Sub
 
 Public Sub getMessage As String
