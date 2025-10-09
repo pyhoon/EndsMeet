@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:		EndsMeet
-' Version:		1.40
+' Version:		1.50
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:	PayPal (https://paypal.me/aeric80/)
@@ -19,7 +19,6 @@ Sub Class_Globals
 	Public email 					As EmailSettings
 	Public staticfiles 				As StaticFilesSettings
 	Public routes					As List
-	Private mPort 					As Int
 	Private mMessage 				As String
 	Private mVersion				As String
 	Private mRootUrl 				As String
@@ -48,8 +47,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mPort = 8080
-	mVersion = "1.40"
+	mVersion = "1.50"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
@@ -139,8 +137,9 @@ Public Sub LoadConfig
 		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
 	End If
 	ctx = File.ReadMap(File.DirApp, mConfigFile)
-	If ctx.ContainsKey("PORT") Then mPort = ctx.Get("PORT")
+	If ctx.ContainsKey("PORT") Then srvr.Port = ctx.Get("PORT")
 	If ctx.ContainsKey("SSL_PORT") Then ssl.Port = ctx.Get("SSL_PORT")
+	If ctx.ContainsKey("SSL_ENABLED") Then ssl.Enabled = ctx.Get("SSL_ENABLED").As(String).EqualsIgnoreCase("True")
 	If ctx.ContainsKey("SSL_KEYSTORE_DIR") Then ssl.KeystoreDir = ctx.Get("SSL_KEYSTORE_DIR")
 	If ctx.ContainsKey("SSL_KEYSTORE_FILE") Then ssl.KeystoreFile = ctx.Get("SSL_KEYSTORE_FILE")
 	If ctx.ContainsKey("SSL_KEYSTORE_PASSWORD") Then ssl.KeystorePassword = ctx.Get("SSL_KEYSTORE_PASSWORD")
@@ -154,7 +153,6 @@ End Sub
 
 ' Starts the server
 Public Sub Start
-	mServerUrl = mRootUrl
 	' Update useful keys
 	ctx.Put("ROOT_URL", mRootUrl)
 	ctx.Put("ROOT_PATH", mRootPath)
@@ -170,52 +168,46 @@ Public Sub Start
 		ctx.Remove("API_VERBOSE_MODE")
 		ctx.Remove("API_ORDERED_KEYS")
 	End If
-	If mPort <> 0 Then
-		srvr.Port = mPort
-	Else
-		mPort = srvr.Port
-		If mLogEnabled Then	LogColor($"Server Port is not set (default to ${mPort})"$, COLOR_RED)
+	mServerUrl = mRootUrl
+	If srvr.Port <> 80 Then
+		mServerUrl = mServerUrl & ":" & srvr.Port
 	End If
-	If ssl.Port = 0 Then
-		ssl.Enabled = False
-		If mPort <> 80 Then
-			mServerUrl = mRootUrl & ":" & mPort
-		End If
-		ctx.Put("SERVER_URL", mServerUrl)
-		If mLogEnabled Then	LogColor("SSL is disabled", COLOR_BLUE)
-	Else
+	ctx.Put("SERVER_URL", mServerUrl)
+	If ssl.Enabled Then
 		If ssl.KeystoreFile = "" Then
 			ssl.Enabled = False
-			If mLogEnabled Then	LogColor("Ssl KeystoreFile is not set (SSL is disabled)", COLOR_RED)
+			If mLogEnabled Then	LogColor("Ssl KeystoreFile is not set", COLOR_RED)
 		Else
 			If ssl.KeystoreDir = "" Then
 				ssl.KeystoreDir = File.DirApp
 			End If
 			If File.Exists(ssl.KeystoreDir, ssl.KeystoreFile) = False Then
 				ssl.Enabled = False
-				If mLogEnabled Then	LogColor("Ssl KeystoreFile is found (SSL is disabled)", COLOR_RED)
+				If mLogEnabled Then	LogColor("Ssl KeystoreFile is found", COLOR_RED)
 			Else
 				Dim sc As SslConfiguration
 				sc.Initialize
 				sc.SetKeyStorePath(ssl.KeystoreDir, ssl.KeystoreFile)
 				sc.KeyStorePassword = ssl.KeystorePassword
 				srvr.SetSslConfiguration(sc, ssl.Port)
-				If mRedirect Then
-					' Add filter to redirect all traffic from http to https (optional)
-					srvr.AddFilter("/*", "HttpsFilter", False)
-					mRootUrl = mRootUrl.Replace("http:", "https:")
-					ctx.Put("ROOT_URL", mRootUrl)
-					If mPort = 443 Then
-						mServerUrl = mRootUrl
-					Else
-						mServerUrl = mRootUrl & ":" & ssl.Port
-					End If
-				Else
-					mServerUrl = mRootUrl & ":" & mPort
-				End If
-				ssl.Enabled = True
-				If mLogEnabled Then	LogColor("SSL is enabled", COLOR_BLUE)
 			End If
+		End If
+		If mLogEnabled Then
+			If ssl.Enabled Then
+				LogColor("SSL is enabled", COLOR_BLUE)
+			Else
+				LogColor("SSL is disabled", COLOR_BLUE)
+			End If
+		End If
+	End If
+	If mRedirect Then
+		' Add filter to redirect all traffic from http to https (optional)
+		srvr.AddFilter("/*", "HttpsFilter", False)
+		mRootUrl = mRootUrl.Replace("http:", "https:")
+		If ssl.Port = 443 Then
+			mServerUrl = mRootUrl
+		Else
+			mServerUrl = mRootUrl & ":" & ssl.Port
 		End If
 		ctx.Put("SERVER_URL", mServerUrl)
 	End If
@@ -228,7 +220,7 @@ Public Sub Start
 	End If
 	If Initialized(cors.Path) And Initialized(cors.Settings) Then
 		For Each path As String In cors.Path
-			Me.As(JavaObject).RunMethod("addFilter", Array As Object(srvr.As(JavaObject).GetField("context"), path, cors.Settings))
+			AddCorsFilter(path, cors.Settings)
 		Next
 		If mLogEnabled Then	LogColor("CORS is enabled", COLOR_BLUE)
 	End If
@@ -250,11 +242,11 @@ Public Sub getVersion As String
 End Sub
 
 Public Sub getPort As Int
-	Return mPort
+	Return srvr.Port
 End Sub
 
 Public Sub setPort (Port As Int)
-	mPort = Port
+	srvr.Port = Port
 End Sub
 
 Public Sub getRootUrl As String
@@ -303,13 +295,18 @@ Public Sub setConfigFile (FileName As String)
 	mConfigFile = FileName
 End Sub
 
+Public Sub getRedirectToHttps As Boolean
+	Return mRedirect
+End Sub
+
 Public Sub setRedirectToHttps (Enabled As Boolean)
 	mRedirect = Enabled
 End Sub
 
 ' Show startup message
 Public Sub LogStartupMessage
-	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${mPort}${IIf(ssl.Port > 0 And mRedirect, $" (redirected to port ${ssl.Port})"$, "")}"$
+	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${srvr.Port}"$
+	If ssl.Port > 0 And mRedirect Then mMessage = mMessage & $" (redirected to port ${ssl.Port})"$
 	Log(mMessage)
 End Sub
 
@@ -322,35 +319,32 @@ Public Sub CreateRoute (Method As String, Path As String, Class As String) As Ro
 	Return t1
 End Sub
 
-#If JAVA
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.Filter;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import anywheresoftware.b4a.objects.collections.Map.MyMap;
+Private Sub AddCorsFilter (path As String, settings As Map)
+    Dim filterHolder As JavaObject
+    filterHolder.InitializeNewInstance("org.eclipse.jetty.servlet.FilterHolder", Null)
+    filterHolder.RunMethod("setClassName", Array("org.eclipse.jetty.servlets.CrossOriginFilter"))
+	
+    If settings <> Null Then
+        filterHolder.RunMethod("setInitParameters", Array(CopyMyMap(settings)))
+    End If
 
-public void addFilter (ServletContextHandler context, String path, MyMap settings) throws Exception {
-    FilterHolder fh = new FilterHolder((Class<? extends Filter>) Class.forName("org.eclipse.jetty.servlets.CrossOriginFilter"));
-    if (settings != null) {
-        HashMap<String,String> m = new HashMap<String, String>();
-        copyMyMap(settings, m, true); //integerNumbersOnly!
-        fh.setInitParameters(m);
-    }
-    context.addFilter(fh, path, EnumSet.of(DispatcherType.REQUEST));
-}
+    Dim dispatcherTypes As JavaObject
+    dispatcherTypes.InitializeStatic("jakarta.servlet.DispatcherType")
+    Dim requestEnum As JavaObject = dispatcherTypes.GetField("REQUEST")
+    
+    Dim enumSet As JavaObject
+    enumSet.InitializeStatic("java.util.EnumSet")
+    enumSet = enumSet.RunMethod("of", Array(requestEnum))
+    
+    Dim context As JavaObject = srvr
+    context.GetFieldJO("context").RunMethod("addFilter", Array(filterHolder, path, enumSet))
+End Sub
 
-private void copyMyMap (MyMap m, java.util.Map<String, String> o, boolean integerNumbersOnly) {
-    for (Entry<Object, Object> e : m.entrySet()) {
-        String value;
-        if (integerNumbersOnly && e.getValue() instanceof Number) {
-            value = String.valueOf(((Number)e.getValue()).longValue());
-        } else {
-            value = String.valueOf(e.getValue());
-            o.put(String.valueOf(e.getKey()), value);
-        }
-    }
-}
-#End If
+Sub CopyMyMap (m As Map) As Map
+	Dim o As Map = CreateMap()
+	For Each key As Object In m.Keys
+		Dim value As String = m.Get(key)
+		o.Put(key, value)
+	Next
+	Return o
+End Sub

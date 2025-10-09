@@ -1,7 +1,7 @@
 # Actual config.example should be provided by Pakai framework
 
 # Product: 		EndsMeet Server
-# Version: 		1.40
+# Version: 		1.50
 # License:		MIT License
 # Developer:	Poon Yip Hoon (Aeric)
 # Donation:		https://paypal.me/aeric80/
@@ -30,6 +30,7 @@ PORT=8080
 # C:\Java\jdk-11.0.1\bin\keytool -keystore keystore -alias jetty -genkey -keyalg RSA
 # Copy keystore file to Objects folder of the B4J project
 SSL_PORT=0
+SSL_ENABLED=False
 SSL_KEYSTORE_DIR=/etc/letsencrypt/live/mydomain.com
 SSL_KEYSTORE_FILE=keystore.jks
 SSL_KEYSTORE_PASSWORD=xxxxxxxxx

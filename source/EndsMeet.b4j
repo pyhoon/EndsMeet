@@ -11,15 +11,16 @@ Library3=jserver
 Library4=minihtml
 Library5=webapiutils
 Module1=EndsMeet
-Module2=Index
+Module2=HttpsFilter
+Module3=Index
 NumberOfFiles=2
 NumberOfLibraries=5
-NumberOfModules=2
+NumberOfModules=3
 Version=10.3
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		1.40
+' Version:		1.50
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -29,24 +30,30 @@ Version=10.3
 #End Region
 #Region Macros
 #Macro: Title, Copy, ide://run?file=%COMSPEC%&Args=/c&Args=copy&Args=%PROJECT%\EndsMeet.bas&Args=%PROJECT%\..\release\EndsMeet.bas
-#Macro: Title, Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer-non-ui.jar&Args=%PROJECT%\..\release&Args=%PROJECT%\..\release&Args=Version&Args=add.1
+#Macro: Title, Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer-non-ui.jar&Args=%PROJECT%\..\release&Args=%PROJECT%\..\release&Args=Version&Args=add.01
 #Macro: Title, Release, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
 #Macro: Title, Publish, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..\..\release&Args=-cMf&Args=%ADDITIONAL%\%PROJECT_NAME%.b4xlib&Args=*
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
 	Private Api As ApiSettings
-	Private Const VERSION As String = "1.40"
+	Private Const VERSION As String = "1.50"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	App.Initialize
 	Api = App.api
+	App.LoadConfig
+	App.LogEnabled = True
+	'App.Port = 0
+	'App.RedirectToHttps = True
+	
 	App.Get("", "Index")
 	App.Post("/modal", "Index")
 	App.Get("/api/*", "Index")
 	App.Put("/api/*", "Index")
+	
 	'App.cors.Path = Array("*")
 	'App.cors.Settings = CreateMap( _
 	'"allowedOrigins": "*", _
@@ -55,15 +62,13 @@ Sub AppStart (Args() As String)
 	'"allowCredentials": "true", _
 	'"preflightMaxAge": 1800, _
 	'"chainPreflight": "false")
-	'App.LogEnabled = True
-	'App.UseConfigFile = True
-	App.LoadConfig
+
 	App.Start
 	App.LogStartupMessage 'optional
 	App.ctx.Put("VERSION", VERSION)
 	Log($"App version: ${App.ctx.Get("VERSION")}"$)
-	Log(App.ctx)
-	Log(App.api)
+	'Log(App.ctx)
+	'Log(App.api)
 	StartMessageLoop
 End Sub
 
