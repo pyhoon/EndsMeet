@@ -4,10 +4,10 @@ ModulesStructureVersion=1
 Type=Class
 Version=10.3
 @EndOfDesignText@
-' Product:		EndsMeet
-' Version:		1.50
-' License:		MIT License
-' GitHub:		https://github.com/pyhoon/EndsMeet
+' Product:	EndsMeet
+' Version:	1.50
+' License:	MIT License
+' GitHub:	https://github.com/pyhoon/EndsMeet
 ' Donation:	PayPal (https://paypal.me/aeric80/)
 ' Developer:	Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
 Sub Class_Globals
@@ -25,8 +25,8 @@ Sub Class_Globals
 	Private mRootPath 				As String
 	Private mServerUrl 				As String
 	Private mConfigFile				As String
-	Private mRedirect 				As Boolean
 	Private mLogEnabled 			As Boolean
+	Private mRedirectToHttps		As Boolean
 	Private mRemoveUnusedConfig		As Boolean
 	Private Const COLOR_RED 		As Int = -65536
 	Private Const COLOR_BLUE 		As Int = -16776961
@@ -130,8 +130,7 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 End Sub
 
 ' Load from config file
-' e.g PORT, SSL_PORT, ROOT_URL, ROOT_PATH,
-' API_VERBOSE_MODE, API_ORDERED_KEYS
+' e.g PORT, SSL_PORT, ROOT_URL, ROOT_PATH, REDIRECT_TO_HTTPS
 Public Sub LoadConfig
 	If File.Exists(File.DirApp, mConfigFile) = False Then
 		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
@@ -149,6 +148,7 @@ Public Sub LoadConfig
 	If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
 	If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
 	If ctx.ContainsKey("API_ORDERED_KEYS") Then api.OrderedKeys = ctx.Get("API_ORDERED_KEYS").As(String).EqualsIgnoreCase("True")
+	If ctx.ContainsKey("REDIRECT_TO_HTTPS") Then mRedirectToHttps = ctx.Get("REDIRECT_TO_HTTPS").As(String).EqualsIgnoreCase("True")
 End Sub
 
 ' Starts the server
@@ -160,6 +160,7 @@ Public Sub Start
 	If mRemoveUnusedConfig Then
 		ctx.Remove("PORT")
 		ctx.Remove("SSL_PORT")
+		ctx.Remove("SSL_ENABLED")
 		ctx.Remove("SSL_KEYSTORE_DIR")
 		ctx.Remove("SSL_KEYSTORE_FILE")
 		ctx.Remove("SSL_KEYSTORE_PASSWORD")
@@ -167,6 +168,7 @@ Public Sub Start
 		ctx.Remove("API_VERSIONING")
 		ctx.Remove("API_VERBOSE_MODE")
 		ctx.Remove("API_ORDERED_KEYS")
+		ctx.Remove("REDIRECT_TO_HTTPS")
 	End If
 	mServerUrl = mRootUrl
 	If srvr.Port <> 80 Then
@@ -200,7 +202,7 @@ Public Sub Start
 			End If
 		End If
 	End If
-	If mRedirect Then
+	If mRedirectToHttps Then
 		' Add filter to redirect all traffic from http to https (optional)
 		srvr.AddFilter("/*", "HttpsFilter", False)
 		mRootUrl = mRootUrl.Replace("http:", "https:")
@@ -296,17 +298,17 @@ Public Sub setConfigFile (FileName As String)
 End Sub
 
 Public Sub getRedirectToHttps As Boolean
-	Return mRedirect
+	Return mRedirectToHttps
 End Sub
 
 Public Sub setRedirectToHttps (Enabled As Boolean)
-	mRedirect = Enabled
+	mRedirectToHttps = Enabled
 End Sub
 
 ' Show startup message
 Public Sub LogStartupMessage
 	If mMessage = "" Then mMessage = $"EndsMeet server (version = ${mVersion}) is running on port ${srvr.Port}"$
-	If ssl.Port > 0 And mRedirect Then mMessage = mMessage & $" (redirected to port ${ssl.Port})"$
+	If ssl.Port > 0 And mRedirectToHttps Then mMessage = mMessage & $" (redirected to port ${ssl.Port})"$
 	Log(mMessage)
 End Sub
 

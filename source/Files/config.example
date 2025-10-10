@@ -24,6 +24,7 @@ API_NAME=api
 
 # Server port
 PORT=8080
+REDIRECT_TO_HTTPS=False
 
 # SSL Settings
 # Generate a keystore from Windows CMD

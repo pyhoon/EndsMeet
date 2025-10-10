@@ -46,9 +46,7 @@ Sub AppStart (Args() As String)
 	Api = App.api
 	App.LoadConfig
 	App.LogEnabled = True
-	'App.Port = 0
-	'App.RedirectToHttps = True
-	
+
 	App.Get("", "Index")
 	App.Post("/modal", "Index")
 	App.Get("/api/*", "Index")
@@ -67,8 +65,8 @@ Sub AppStart (Args() As String)
 	App.LogStartupMessage 'optional
 	App.ctx.Put("VERSION", VERSION)
 	Log($"App version: ${App.ctx.Get("VERSION")}"$)
-	'Log(App.ctx)
-	'Log(App.api)
+	Log(App.api.ContentType)
+	Log(App.ctx.Get("SERVER_URL"))
 	StartMessageLoop
 End Sub
 
