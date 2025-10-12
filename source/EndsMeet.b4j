@@ -29,10 +29,10 @@ Version=10.3
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Copy, ide://run?file=%COMSPEC%&Args=/c&Args=copy&Args=%PROJECT%\EndsMeet.bas&Args=%PROJECT%\..\release\EndsMeet.bas
-#Macro: Title, Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer-non-ui.jar&Args=%PROJECT%\..\release&Args=%PROJECT%\..\release&Args=Version&Args=add.01
-#Macro: Title, Release, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
-#Macro: Title, Publish, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..\..\release&Args=-cMf&Args=%ADDITIONAL%\%PROJECT_NAME%.b4xlib&Args=*
+#Macro: Title, Update Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=1.50
+#Macro: Title, Create B4xLib, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=*.bas&args=manifest.txt&args=LICENSE
+#Macro: Title, Release folder, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
+#Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%\..\B4X
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
@@ -51,15 +51,6 @@ Sub AppStart (Args() As String)
 	App.Post("/modal", "Index")
 	App.Get("/api/*", "Index")
 	App.Put("/api/*", "Index")
-	
-	'App.cors.Path = Array("*")
-	'App.cors.Settings = CreateMap( _
-	'"allowedOrigins": "*", _
-	'"allowedHeaders": "*", _
-	'"allowedMethods": "*", _
-	'"allowCredentials": "true", _
-	'"preflightMaxAge": 1800, _
-	'"chainPreflight": "false")
 
 	App.Start
 	App.LogStartupMessage 'optional
