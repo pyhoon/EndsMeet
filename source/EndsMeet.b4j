@@ -1,9 +1,7 @@
 ﻿AppType=StandardJava
 Build1=Default,com.puterise
 File1=config.example
-File2=help.html
 FileGroup1=Default Group
-FileGroup2=Default Group
 Group=App
 Library1=javaobject
 Library2=jcore
@@ -13,7 +11,7 @@ Library5=webapiutils
 Module1=EndsMeet
 Module2=HttpsFilter
 Module3=Index
-NumberOfFiles=2
+NumberOfFiles=1
 NumberOfLibraries=5
 NumberOfModules=3
 Version=10.3
@@ -36,14 +34,14 @@ Version=10.3
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
-	Private Api As ApiSettings
+	'Private Api As ApiSettings
 	Private Const VERSION As String = "1.50"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	App.Initialize
-	Api = App.api
+	'Api = App.api
 	App.LoadConfig
 	App.LogEnabled = True
 
@@ -56,15 +54,15 @@ Sub AppStart (Args() As String)
 	App.LogStartupMessage 'optional
 	App.ctx.Put("VERSION", VERSION)
 	Log($"App version: ${App.ctx.Get("VERSION")}"$)
-	Log(App.api.ContentType)
-	Log(App.ctx.Get("SERVER_URL"))
+	'Log(Api.ContentType)
+	'Log(App.ctx.Get("SERVER_URL"))
 	StartMessageLoop
 End Sub
 
 ' Set global ApiSettings from Main to HttpResponseMessage
-Public Sub SetApiMessage (Message As HttpResponseMessage)
-	Message.VerboseMode = Api.VerboseMode
-	Message.OrderedKeys = Api.OrderedKeys
-	Message.ContentType = Api.ContentType
-	Message.PayloadType = Api.PayloadType
-End Sub
+'Public Sub SetApiMessage (Message As HttpResponseMessage)
+'	Message.VerboseMode = Api.VerboseMode
+'	Message.OrderedKeys = Api.OrderedKeys
+'	Message.ContentType = Api.ContentType
+'	Message.PayloadType = Api.PayloadType
+'End Sub
