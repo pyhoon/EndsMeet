@@ -127,9 +127,9 @@ Sub GenerateModal As String
 	H5.cls("modal-title").Text("Modal title").up(header)
 	Dim body1 As Tag = Div.cls("modal-body").up(content)
 	Paragraph.Text("Modal body text goes here.").up(body1)
-	Dim footer As Tag = Div.cls("modal-footer").up(content)
+	Dim footer1 As Tag = Div.cls("modal-footer").up(content)
 	Button.typeOf("button").cls("btn btn-secondary text-uppercase") _
 	.attr("data-bs-dismiss", "modal") _
-	.text("Close").up(footer)
+	.text("Close").up(footer1)
 	Return dialog1.Build
 End Sub
