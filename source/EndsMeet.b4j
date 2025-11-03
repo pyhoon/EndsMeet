@@ -18,7 +18,7 @@ Version=10.3
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		1.50
+' Version:		1.60
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -27,21 +27,19 @@ Version=10.3
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Update Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=1.50
+#Macro: Title, Update Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=1.60
 #Macro: Title, Create B4xLib, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=LICENSE
 #Macro: Title, Release folder, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
-#Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%\..\B4X
+#Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
-	'Private Api As ApiSettings
-	Private Const VERSION As String = "1.50"
+	Private Const VERSION As String = "1.60"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	App.Initialize
-	'Api = App.api
 	App.LoadConfig
 	App.LogEnabled = True
 
@@ -54,15 +52,6 @@ Sub AppStart (Args() As String)
 	App.LogStartupMessage 'optional
 	App.ctx.Put("VERSION", VERSION)
 	Log($"App version: ${App.ctx.Get("VERSION")}"$)
-	'Log(Api.ContentType)
 	'Log(App.ctx.Get("SERVER_URL"))
 	StartMessageLoop
 End Sub
-
-' Set global ApiSettings from Main to HttpResponseMessage
-'Public Sub SetApiMessage (Message As HttpResponseMessage)
-'	Message.VerboseMode = Api.VerboseMode
-'	Message.OrderedKeys = Api.OrderedKeys
-'	Message.ContentType = Api.ContentType
-'	Message.PayloadType = Api.PayloadType
-'End Sub
