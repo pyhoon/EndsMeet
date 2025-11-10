@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:	EndsMeet
-' Version:	1.60
+' Version:	1.70
 ' License:	MIT License
 ' GitHub:	https://github.com/pyhoon/EndsMeet
 ' Donation:	PayPal (https://paypal.me/aeric80/)
@@ -30,16 +30,17 @@ Sub Class_Globals
 	Private mRemoveUnusedConfig		As Boolean
 	Private Const COLOR_RED 		As Int = -65536
 	Private Const COLOR_BLUE 		As Int = -16776961
-	Type ApiSettings (Name As String, Versioning As Boolean, PayloadType As String, ContentType As String, EnableHelp As Boolean, VerboseMode As Boolean, OrderedKeys As Boolean)
+	Type Route (Method As String, Path As String, Class As String)
+	Type StaticFilesSettings (Folder As String, Browsable As Boolean)
+	Type CorsSettings (Enabled As Boolean, Path As List, Settings As Map)
 	Type SslSettings (Enabled As Boolean, Port As Int, KeystoreDir As String, KeystoreFile As String, KeystorePassword As String)
 	Type EmailSettings (SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
-	Type CorsSettings (Enabled As Boolean, Path As List, Settings As Map)
-	Type StaticFilesSettings (Folder As String, Browsable As Boolean)
-	Type Route (Method As String, Path As String, Class As String)
+	Type ApiSettings (Name As String, Versioning As Boolean, PayloadType As String, ContentType As String, EnableHelp As Boolean, VerboseMode As Boolean, OrderedKeys As Boolean)
 End Sub
 
 Public Sub Initialize
 	ctx.Initialize
+	'ctx = srvr.CreateThreadSafeMap
 	api.Initialize
 	ssl.Initialize
 	cors.Initialize
@@ -47,7 +48,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "1.60"
+	mVersion = "1.70"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
@@ -360,6 +361,16 @@ Sub CopyMyMap (m As Map) As Map
 		o.Put(key, value)
 	Next
 	Return o
+End Sub
+
+Public Sub WriteHtml (response As ServletResponse, content As String)
+	response.ContentType = "text/html"
+	response.Write(content)
+End Sub
+
+Public Sub WriteHtml2 (response As ServletResponse, content As String, context As Map)
+	response.ContentType = "text/html"
+	response.Write(ReplaceMap(content, context))
 End Sub
 
 #Region Code from WebUtils
