@@ -4,12 +4,12 @@ ModulesStructureVersion=1
 Type=Class
 Version=10.3
 @EndOfDesignText@
-' Product:	EndsMeet
-' Version:	1.70
-' License:	MIT License
-' GitHub:	https://github.com/pyhoon/EndsMeet
-' Donation:	PayPal (https://paypal.me/aeric80/)
-' Developer:	Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
+' Product:  EndsMeet
+' Version:  1.70
+' License:  MIT License
+' Author:   Poon Yip Hoon (Aeric)
+' GitHub:   https://github.com/pyhoon/EndsMeet
+' Donation: PayPal (https://paypal.me/aeric80/)
 Sub Class_Globals
 	Public ctx 						As Map
 	Public srvr 					As Server
@@ -40,7 +40,6 @@ End Sub
 
 Public Sub Initialize
 	ctx.Initialize
-	'ctx = srvr.CreateThreadSafeMap
 	api.Initialize
 	ssl.Initialize
 	cors.Initialize
