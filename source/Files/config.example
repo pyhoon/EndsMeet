@@ -1,11 +1,11 @@
 # Actual config.example should be provided by Pakai framework
 
-# Product: 		EndsMeet Server
-# Version: 		1.50
-# License:		MIT License
+# Product: 	EndsMeet Server
+# Version: 	1.80
+# License:	MIT License
 # Developer:	Poon Yip Hoon (Aeric)
-# Donation:		https://paypal.me/aeric80/
-# GitHub:		https://github.com/pyhoon/EndsMeet
+# Donation:	https://paypal.me/aeric80/
+# GitHub:	https://github.com/pyhoon/EndsMeet
 
 # Thanks to Erel, Anywhere Software for the great products and B4X community for encouragement and supports.
 # Please consider to donate to me so I can continue to improve this project
@@ -40,4 +40,4 @@ SSL_KEYSTORE_PASSWORD=xxxxxxxxx
 HOME_TITLE=ENDSMEET SERVER
 APP_TITLE=EndsMeet
 APP_TRADEMARK=ENDSMEET
-APP_COPYRIGHT=Copyright Computerise System Solutions 2025
+APP_COPYRIGHT=Copyright Computerise System Solutions 2026

@@ -122,12 +122,12 @@ End Sub
 
 Sub GenerateModal As String
 	Dim dialog1 As Tag = Div.cls("modal-dialog modal-lg modal-dialog-centered")
-	Dim content As Tag = Div.cls("modal-content").up(dialog1)
-	Dim header As Tag = Div.cls("modal-header").up(content)
-	H5.cls("modal-title").Text("Modal title").up(header)
-	Dim body1 As Tag = Div.cls("modal-body").up(content)
+	Dim content1 As Tag = Div.cls("modal-content").up(dialog1)
+	Dim header1 As Tag = Div.cls("modal-header").up(content1)
+	H5.cls("modal-title").Text("Modal title").up(header1)
+	Dim body1 As Tag = Div.cls("modal-body").up(content1)
 	Paragraph.Text("Modal body text goes here.").up(body1)
-	Dim footer1 As Tag = Div.cls("modal-footer").up(content)
+	Dim footer1 As Tag = Div.cls("modal-footer").up(content1)
 	Button.typeOf("button").cls("btn btn-secondary text-uppercase") _
 	.attr("data-bs-dismiss", "modal") _
 	.text("Close").up(footer1)

@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  1.70
+' Version:  1.80
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -47,7 +47,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "1.70"
+	mVersion = "1.80"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
