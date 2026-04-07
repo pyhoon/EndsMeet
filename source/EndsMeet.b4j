@@ -14,7 +14,7 @@ Module3=Index
 NumberOfFiles=1
 NumberOfLibraries=5
 NumberOfModules=3
-Version=10.3
+Version=10.5
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
@@ -34,6 +34,7 @@ Version=10.3
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
+	Public count As Int
 	Private Const VERSION As String = "1.80"
 End Sub
 
