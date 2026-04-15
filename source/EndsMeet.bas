@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  1.80
+' Version:  1.90
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -28,8 +28,8 @@ Sub Class_Globals
 	Private mLogEnabled 			As Boolean
 	Private mRedirectToHttps		As Boolean
 	Private mRemoveUnusedConfig		As Boolean
-	Private Const COLOR_RED 		As Int = -65536
-	Private Const COLOR_BLUE 		As Int = -16776961
+	Private Const COLOR_RED 		As Int = 0xFFFF0000
+	Private Const COLOR_BLUE 		As Int = 0xFF0000FF
 	Type Route (Method As String, Path As String, Class As String)
 	Type StaticFilesSettings (Folder As String, Browsable As Boolean)
 	Type CorsSettings (Enabled As Boolean, Path As List, Settings As Map)
@@ -47,7 +47,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "1.80"
+	mVersion = "1.90"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
@@ -61,52 +61,69 @@ End Sub
 
 ' Add path and class which allows GET method 
 Public Sub Get (Path As String, Class As String)
-	If RouteAdded(Path, Class) = False Then
-		srvr.AddHandler(Path, Class, False)
-	End If
-	routes.Add(CreateRoute("GET", Path, Class))
+	AddRouteIfNotAvailable("GET", Path, Class)
 End Sub
 
 ' Add path and class which allows POST method 
 Public Sub Post (Path As String, Class As String)
-	If RouteAdded(Path, Class) = False Then
-		srvr.AddHandler(Path, Class, False)
-	End If
-	routes.Add(CreateRoute("POST", Path, Class))
+	AddRouteIfNotAvailable("POST", Path, Class)
 End Sub
 
 ' Add path and class which allows PUT method 
 Public Sub Put (Path As String, Class As String)
-	If RouteAdded(Path, Class) = False Then
-		srvr.AddHandler(Path, Class, False)
-	End If
-	routes.Add(CreateRoute("PUT", Path, Class))
+	AddRouteIfNotAvailable("PUT", Path, Class)
+End Sub
+
+' Add path and class which allows PATCH method 
+Public Sub Patch (Path As String, Class As String)
+	AddRouteIfNotAvailable("PATCH", Path, Class)
 End Sub
 
 ' Add path and class which allows DELETE method 
 Public Sub Delete (Path As String, Class As String)
-	If RouteAdded(Path, Class) = False Then
-		srvr.AddHandler(Path, Class, False)
-	End If
-	routes.Add(CreateRoute("DELETE", Path, Class))
+	AddRouteIfNotAvailable("DELETE", Path, Class)
 End Sub
 
-' Add path and class which allows all RESTful methods
+' Add path and class for RESTful methods (GET, POST, PUT, PATCH, DELETE)
 Public Sub Rest (Path As String, Class As String)
-	If RouteAdded(Path, Class) = False Then
-		srvr.AddHandler(Path, Class, False)
-	End If
-	routes.Add(CreateRoute("GET", Path, Class))
-	routes.Add(CreateRoute("POST", Path, Class))
-	routes.Add(CreateRoute("PUT", Path, Class))
-	routes.Add(CreateRoute("DELETE", Path, Class))
+	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+		AddRouteIfNotAvailable(Method, Path, Class)
+	Next
 End Sub
 
-' Checks route is added
-Private Sub RouteAdded (Path As String, Class As String) As Boolean
+' Add path and class for the list of methods
+Public Sub Route (Path As String, Class As String, Methods As List)
+	For Each Method As String In Methods
+		AddRouteIfNotAvailable(Method, Path, Class)
+	Next
+End Sub
+
+Private Sub AddRouteIfNotAvailable (Method As String, Path As String, Class As String)
+	If RouteAdded("ANY", Path, Class) = False Then
+		srvr.AddHandler(Path, Class, False)
+	'Else
+	'	LogColor($"Already added: ${Path} (${Method})"$, COLOR_RED)
+	End If
+	If RouteAdded(Method, Path, Class) = False Then
+		routes.Add(CreateRoute(Method, Path, Class))
+	End If
+End Sub
+
+' Checks route is added for a specific method
+' Method: specify ANY to ignore
+Private Sub RouteAdded (Method As String, Path As String, Class As String) As Boolean
 	For Each rt As Route In routes
-		If rt.Path.EqualsIgnoreCase(Path) And rt.Class.EqualsIgnoreCase(Class) Then
-			Return True
+		If Method.ToUpperCase = "ANY" Then ' Already added for at least one method
+			If rt.Path.EqualsIgnoreCase(Path) And _
+				rt.Class.EqualsIgnoreCase(Class) Then
+				Return True
+			End If
+		Else
+			If rt.Path.EqualsIgnoreCase(Path) And _
+				rt.Class.EqualsIgnoreCase(Class) And _
+				rt.Method.EqualsIgnoreCase(Method) Then
+				Return True
+			End If
 		End If
 	Next
 	Return False
@@ -116,9 +133,17 @@ End Sub
 Public Sub MethodAvailable (Method As String, Path As String, Class As String) As Boolean
 	For Each rt As Route In routes
 		If rt.Method.EqualsIgnoreCase(Method) And _
-			rt.Path.EqualsIgnoreCase(Path) And _
 			rt.Class.EqualsIgnoreCase(Class) Then
-			Return True
+			If rt.Path.Contains("/*") Then
+				Dim TrimmedPath As String = rt.Path.SubString2(0, rt.Path.IndexOf("/*"))
+				If Path.StartsWith(TrimmedPath) Then
+					Return True
+				End If
+			Else
+				If rt.Path.EqualsIgnoreCase(Path) Then
+					Return True
+				End If
+			End If
 		End If
 	Next
 	Return False
@@ -130,14 +155,7 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 	jo.InitializeStatic("anywheresoftware.b4a.BA")
 	Dim PackageName As String = jo.GetField("packageName")
 	Dim Handler As String = GetType(Class).Replace(PackageName & ".", "")
-	For Each rt As Route In routes
-		If rt.Method.EqualsIgnoreCase(Method) And _
-			rt.Path.EqualsIgnoreCase(Path) And _
-			rt.Class.EqualsIgnoreCase(Handler) Then
-			Return True
-		End If
-	Next
-	Return False
+	Return MethodAvailable(Method, Path, Handler)
 End Sub
 
 ' Load from config file
@@ -326,7 +344,7 @@ End Sub
 Public Sub CreateRoute (Method As String, Path As String, Class As String) As Route
 	Dim t1 As Route
 	t1.Initialize
-	t1.Method = Method
+	t1.Method = Method.ToUpperCase
 	t1.Path = Path
 	t1.Class = Class
 	Return t1
