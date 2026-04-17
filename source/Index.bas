@@ -7,11 +7,9 @@ Version=10.2
 Sub Class_Globals
 	Private Request As ServletRequest
 	Private Response As ServletResponse
+	Private HRM As HttpResponseMessage
 	Private Path As String
 	Private Method As String
-	'Private Elements() As String
-	'Private ElementKey As String
-	Private HRM As HttpResponseMessage
 End Sub
 
 Public Sub Initialize
@@ -23,9 +21,6 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 	Response = resp
 	Path = Request.RequestURI
 	Method = Request.Method.ToUpperCase
-'	Dim FullElements() As String = WebApiUtils.GetUriElements(Request.RequestURI)
-'	Elements = WebApiUtils.CropElements(FullElements, 1) ' 1 For Index handler
-	
 	Log($"${Method}: ${Path}"$)
 	If Path = "/" Then
 		ShowIndexPage
@@ -45,7 +40,7 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 '	' Checking if /api/ is consider as /api/*
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api/")
-'	For Each Method2 As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+'	For Each Method2 As String In Array As String("GET", "POST", "PUT", "DELETE")
 '		If Main.App.MethodAvailable2(Method2, "/api/", Me) Then
 '			LogColor($"${Method2}: Method available"$, 0xFF0000FF)
 '		Else
@@ -56,70 +51,14 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 '	' Checking if /api is consider as /api/*
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api")	
-'	For Each Method2 As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+'	For Each Method2 As String In Array As String("GET", "POST", "PUT", "DELETE")
 '		If Main.App.MethodAvailable2(Method2, "/api", Me) Then
 '			LogColor($"${Method2}: Method available"$, 0xFF0000FF)
 '		Else
 '			LogColor($"${Method2}: Method not available"$, 0xFFFF0000)
 '		End If
 '	Next
-	
-'	If ElementMatch("") Then
-'		If Main.App.MethodAvailable(Method, "", "index") Then
-'			ShowIndexPage
-'			Return
-'		End If
-''		If Main.App.MethodAvailable2(Method, "", Me) Then
-''			ShowIndexPage
-''			Return
-''		End If
-'	End If
-'	If ElementMatch("key") Then
-'		Select ElementKey
-'			Case "modal"
-'				'If Main.App.MethodAvailable(Method, "/modal", "Index") = False Then
-'				'	WebApiUtils.ReturnHtmlMethodNotAllowed(Response)
-'				'	Return
-'				'End If
-'				'If Main.App.MethodAvailable2(Method, "/modal", Me) = False Then
-'				'	WebApiUtils.ReturnHtmlMethodNotAllowed(Response)
-'				'	Return
-'				'End If
-'				WebApiUtils.ReturnHtml(GenerateModal, Response)
-'				Return
-'			Case "api"
-'				'If Main.App.MethodAvailable(Method, "/api/*", "Index") = False Then
-'				'	WebApiUtils.ReturnMethodNotAllow(HRM, Response)
-'				'	Return
-'				'End If
-'				'If Main.App.MethodAvailable2(Method, "/api/*", Me) = False Then
-'				'	WebApiUtils.ReturnMethodNotAllow(HRM, Response)
-'				'	Return
-'				'End If
-'				HRM.ResponseCode = 200
-'				HRM.ResponseMessage = "Success"
-'				HRM.ResponseData = Array()
-'				WebApiUtils.ReturnHttpResponse(HRM, Response)
-'				Return
-'		End Select
-'	End If
-'	WebApiUtils.ReturnHtmlPageNotFound(Response)
 End Sub
-
-'Private Sub ElementMatch (Pattern As String) As Boolean
-'	Select Pattern
-'		Case ""
-'			If Elements.Length = 0 Then
-'				Return True
-'			End If
-'		Case "key"
-'			If Elements.Length = 1 Then
-'				ElementKey = Elements(0)
-'				Return True
-'			End If
-'	End Select
-'	Return False
-'End Sub
 
 Private Sub ShowIndexPage
 	Dim doc As MiniHtml

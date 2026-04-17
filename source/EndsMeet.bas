@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  1.90
+' Version:  2.00
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -47,7 +47,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "1.90"
+	mVersion = "2.00"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
@@ -74,19 +74,14 @@ Public Sub Put (Path As String, Class As String)
 	AddRouteIfNotAvailable("PUT", Path, Class)
 End Sub
 
-' Add path and class which allows PATCH method 
-Public Sub Patch (Path As String, Class As String)
-	AddRouteIfNotAvailable("PATCH", Path, Class)
-End Sub
-
 ' Add path and class which allows DELETE method 
 Public Sub Delete (Path As String, Class As String)
 	AddRouteIfNotAvailable("DELETE", Path, Class)
 End Sub
 
-' Add path and class for RESTful methods (GET, POST, PUT, PATCH, DELETE)
+' Add path and class for RESTful methods (GET, POST, PUT, DELETE)
 Public Sub Rest (Path As String, Class As String)
-	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
 		AddRouteIfNotAvailable(Method, Path, Class)
 	Next
 End Sub

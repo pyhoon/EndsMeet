@@ -18,7 +18,7 @@ Version=10.5
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		1.90
+' Version:		2.00
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -27,7 +27,7 @@ Version=10.5
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Update Version, ide://run?file=%JAVABIN%\java.exe&Args=-jar&Args=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=1.90
+#Macro: Title, Update Version, ide://run?file=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=2.00
 #Macro: Title, Create B4xLib, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
 #Macro: Title, Release folder, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
 #Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
@@ -35,7 +35,7 @@ Version=10.5
 Sub Process_Globals
 	Public App As EndsMeet
 	Public count As Int
-	Private Const VERSION As String = "1.90"
+	Private Const VERSION As String = "2.00"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
@@ -46,8 +46,6 @@ Sub AppStart (Args() As String)
 
 	App.Get("", "Index")
 	App.Post("/modal", "Index")
-	'App.Get("/api/*", "Index")
-	'App.Put("/api/*", "Index")
 	App.Route("/api/*", "Index", Array("Get", "Put", "GET"))
 	For Each rt As Route In App.routes
 		LogColor($"${rt.Method}: ${rt.Class}->${rt.Path}"$, 0xFF0000FF)
@@ -55,7 +53,7 @@ Sub AppStart (Args() As String)
 	
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api/*")
-'	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
 '		If App.MethodAvailable(Method, "/api/*", "index") Then
 '			LogColor($"${Method}: Method available"$, 0xFF0000FF)
 '		Else
@@ -66,7 +64,7 @@ Sub AppStart (Args() As String)
 '	' Checking if /api/ is consider as /api/*
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api/")
-'	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
 '		If App.MethodAvailable(Method, "/api/", "Index") Then
 '			LogColor($"${Method}: Method available"$, 0xFF0000FF)
 '		Else
@@ -77,7 +75,7 @@ Sub AppStart (Args() As String)
 '	' Checking if /api is consider as /api/*
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api")	
-'	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
 '		If App.MethodAvailable(Method, "/api", "index") Then
 '			LogColor($"${Method}: Method available"$, 0xFF0000FF)
 '		Else
