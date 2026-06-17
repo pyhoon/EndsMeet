@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  2.00
+' Version:  2.10
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -47,7 +47,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "2.00"
+	mVersion = "2.10"
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
@@ -364,6 +364,39 @@ Private Sub AddCorsFilter (path As String, settings As Map)
     
     Dim context As JavaObject = srvr
     context.GetFieldJO("context").RunMethod("addFilter", Array(filterHolder, path, enumSet))
+End Sub
+
+Public Sub ExistInCache (Key As String) As Boolean
+	Return ctx.ContainsKey(Key)
+End Sub
+
+Public Sub WriteToCache (Key As String, Value As Object)
+	ctx.Put(Key, Value)
+End Sub
+
+Public Sub ReadFromCache (Key As String) As Object
+	Dim Value As Object = ctx.Get(Key)
+	If Value Is MiniHtml Then
+		Return Value.As(MiniHtml)
+	Else If GetType(Value) = "[B" Then
+		Return ConvertFromBytes(Value)
+	Else
+		Return Value
+	End If
+End Sub
+
+Public Sub ConvertFromBytes (Buffer() As Byte) As MiniHtml
+	Dim tag1 As MiniHtml
+	tag1.Initialize("")
+	Dim s As String = BytesToString(Buffer, 0, Buffer.Length, "UTF-8")
+	Return tag1.Parse(s)
+End Sub
+
+Public Sub ConvertToBytes As Byte()
+	Dim tag1 As MiniHtml
+	tag1.Initialize("")
+	Dim s As String = tag1.build
+	Return s.GetBytes("UTF8")
 End Sub
 
 Sub CopyMyMap (m As Map) As Map
