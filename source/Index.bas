@@ -63,8 +63,8 @@ End Sub
 Private Sub ShowIndexPage
 	Dim doc As MiniHtml
 	doc.Initialize("")
-	doc.Write("<!DOCTYPE html>")
-	doc.Write(GenerateIndex)
+	doc.Append("<!DOCTYPE html>")
+	doc.Append(GenerateIndex)
 	Response.Write(doc.ToString)
 End Sub
 
