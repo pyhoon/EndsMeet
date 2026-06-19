@@ -18,7 +18,7 @@ Version=10.5
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		2.10
+' Version:		2.20
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -27,7 +27,7 @@ Version=10.5
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Update Version, ide://run?file=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=2.10&Args=B4J.DependsOn&Args=JavaObject,jServer,MiniHtml
+#Macro: Title, Update Version, ide://run?file=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=2.20&Args=B4J.DependsOn&Args=JavaObject,jServer
 #Macro: Title, Create B4xLib, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
 #Macro: Title, Release folder, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
 #Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
@@ -35,7 +35,7 @@ Version=10.5
 Sub Process_Globals
 	Public App As EndsMeet
 	Public count As Int
-	Private Const VERSION As String = "2.10"
+	Private Const VERSION As String = "2.20"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
