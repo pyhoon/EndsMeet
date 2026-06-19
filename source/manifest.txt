@@ -1,4 +1,4 @@
 Author=Aeric
-Version=2.10
-B4J.DependsOn=JavaObject,jServer,MiniHtml
+Version=2.20
+B4J.DependsOn=JavaObject,jServer
 Supported Platforms=B4J
