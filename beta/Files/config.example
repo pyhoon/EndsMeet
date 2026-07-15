@@ -1,0 +1,43 @@
+# Actual config.example should be provided by Pakai Server framework
+
+# Product:   EndsMeet Server
+# Version: 	 3.00
+# License:	 MIT License
+# Developer: Poon Yip Hoon (Aeric)
+# Donation:	 https://paypal.me/aeric80/
+# GitHub:	 https://github.com/pyhoon/EndsMeet
+
+# Thanks to Erel, Anywhere Software for the great products and B4X community for encouragement and supports.
+# Please consider to donate to me so I can continue to improve this project
+# Lines starting with '#' are comments.
+# Backslash character at the end of line means that the command continues in the next line.
+
+# Path settings
+ROOT_URL=http://127.0.0.1
+ROOT_PATH=
+
+# API settings
+API_NAME=api
+#API_VERSIONING=False
+#API_VERBOSE_MODE=True
+#API_ORDERED_KEYS=True
+
+# Server port
+PORT=8080
+REDIRECT_TO_HTTPS=False
+
+# SSL Settings
+# Generate a keystore from Windows CMD
+# C:\Java\jdk-11.0.1\bin\keytool -keystore keystore -alias jetty -genkey -keyalg RSA
+# Copy keystore file to Objects folder of the B4J project
+SSL_PORT=0
+SSL_ENABLED=False
+SSL_KEYSTORE_DIR=/etc/letsencrypt/live/mydomain.com
+SSL_KEYSTORE_FILE=keystore.jks
+SSL_KEYSTORE_PASSWORD=xxxxxxxxx
+
+# Define App Constants
+HOME_TITLE=ENDSMEET SERVER
+APP_TITLE=EndsMeet
+APP_TRADEMARK=ENDSMEET
+APP_COPYRIGHT=Copyright Computerise System Solutions 2026

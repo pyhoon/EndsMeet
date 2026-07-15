@@ -1,0 +1,18 @@
+# ignore files
+$APPNAME$.b4j.meta
+# Objects/config.ini
+# Objects/help.html
+# Objects/*.log
+# Objects/*.jar
+# Objects/*.db*
+# Objects/keystore*
+
+# ignore ALL files in these directories
+AutoBackups
+Objects
+# Objects/b4xlibs/
+# Objects/bin/
+# Objects/logs/
+# Objects/shell/
+# Objects/src/
+# Objects/www/assets/scripts
