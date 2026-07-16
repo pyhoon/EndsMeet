@@ -51,7 +51,7 @@ Public Sub Initialize
 	mConfigFile = "config.ini"
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
-	staticfiles.Folder = File.Combine(File.DirApp, "www")
+	staticfiles.Folder = File.Combine(File.DirApp, "")
 	api.Name = "api"
 	api.VerboseMode = True
 	api.OrderedKeys = True
@@ -74,6 +74,11 @@ Public Sub Put (Path As String, Class As String)
 	AddRouteIfNotAvailable("PUT", Path, Class)
 End Sub
 
+' Add path and class which allows PATCH method 
+Public Sub Patch (Path As String, Class As String)
+	AddRouteIfNotAvailable("PATCH", Path, Class)
+End Sub
+
 ' Add path and class which allows DELETE method 
 Public Sub Delete (Path As String, Class As String)
 	AddRouteIfNotAvailable("DELETE", Path, Class)
@@ -81,7 +86,7 @@ End Sub
 
 ' Add path and class for RESTful methods (GET, POST, PUT, DELETE)
 Public Sub Rest (Path As String, Class As String)
-	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
+	For Each Method As String In Array As String("GET", "POST", "PUT", "PATCH", "DELETE")
 		AddRouteIfNotAvailable(Method, Path, Class)
 	Next
 End Sub
@@ -250,8 +255,10 @@ Public Sub Start
 		Next
 		If mLogEnabled Then	LogColor("CORS is enabled", COLOR_BLUE)
 	End If
-	srvr.StaticFilesFolder = staticfiles.Folder
-	srvr.SetStaticFilesOptions(CreateMap("dirAllowed": staticfiles.Browsable))
+	If staticfiles.Folder <> "" Then
+		srvr.StaticFilesFolder = staticfiles.Folder
+		srvr.SetStaticFilesOptions(CreateMap("dirAllowed": staticfiles.Browsable))
+	End If
 	srvr.Start
 End Sub
 
