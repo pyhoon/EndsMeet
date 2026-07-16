@@ -1,0 +1,92 @@
+﻿AppType=StandardJava
+Build1=Default,com.puterise
+File1=config.example
+FileGroup1=Default Group
+Group=App
+Library1=javaobject
+Library2=jcore
+Library3=minihtml
+Library4=webapiutils
+Library5=jserver5
+Module1=EndsMeet
+Module2=HttpsFilter
+Module3=Index
+NumberOfFiles=1
+NumberOfLibraries=5
+NumberOfModules=3
+Version=10.5
+@EndOfDesignText@
+#Region Project Attributes
+' Product:		EndsMeet
+' Version:		3.00
+' License:		MIT License
+' GitHub:		https://github.com/pyhoon/EndsMeet
+' Donation:		PayPal (https://paypal.me/aeric80/)
+' Developer:	Poon Yip Hoon (Aeric) (https://www.b4x.com/android/forum/members/aeric.74499/)
+#CommandLineArgs:
+#MergeLibraries: True
+#End Region
+#Region Macros
+#Macro: Title, Update Version, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=3.00&Args=B4J.DependsOn&Args=JavaObject,jServer5
+#Macro: Title, Create B4xLib, ide://run?File=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\pre-release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
+#Macro: Title, Copy to AddLibs, ide://run?File=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\pre-release\*.b4xlib&args=%ADDITIONAL%
+#Macro: Title, Release Folder, ide://run?File=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\pre-release
+#End Region
+Sub Process_Globals
+	Public App As EndsMeet
+	Public count As Int
+	Private Const VERSION As String = "3.00"
+End Sub
+
+' <link>Open in browser|http://127.0.0.1:8080</link>
+Sub AppStart (Args() As String)
+	App.Initialize
+	App.LoadConfig
+	App.LogEnabled = True
+
+	App.Get("", "Index")
+	App.Post("/modal", "Index")
+	App.Route("/api/*", "Index", Array("Get", "Put", "GET"))
+	For Each rt As Route In App.routes
+		LogColor($"${rt.Method}: ${rt.Class}->${rt.Path}"$, 0xFF0000FF)
+	Next
+	
+'	Log(TAB)
+'	Log("Checking MethodAvailable for /api/*")
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
+'		If App.MethodAvailable(Method, "/api/*", "index") Then
+'			LogColor($"${Method}: Method available"$, 0xFF0000FF)
+'		Else
+'			LogColor($"${Method}: Method not available"$, 0xFFFF0000)
+'		End If
+'	Next
+	
+'	' Checking if /api/ is consider as /api/*
+'	Log(TAB)
+'	Log("Checking MethodAvailable for /api/")
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
+'		If App.MethodAvailable(Method, "/api/", "Index") Then
+'			LogColor($"${Method}: Method available"$, 0xFF0000FF)
+'		Else
+'			LogColor($"${Method}: Method not available"$, 0xFFFF0000)
+'		End If
+'	Next
+	
+'	' Checking if /api is consider as /api/*
+'	Log(TAB)
+'	Log("Checking MethodAvailable for /api")	
+'	For Each Method As String In Array As String("GET", "POST", "PUT", "DELETE")
+'		If App.MethodAvailable(Method, "/api", "index") Then
+'			LogColor($"${Method}: Method available"$, 0xFF0000FF)
+'		Else
+'			LogColor($"${Method}: Method not available"$, 0xFFFF0000)
+'		End If
+'	Next
+	
+	App.Start
+	App.LogStartupMessage 'optional
+	App.ctx.Put("VERSION", VERSION)
+	Log($"App version: ${App.ctx.Get("VERSION")}"$)
+	'Log(App.ctx.Get("SERVER_URL"))
+	StartMessageLoop
+End Sub
