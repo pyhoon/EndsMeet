@@ -1,11 +1,11 @@
-# Actual config.example should be provided by Pakai framework
+# Actual config.example should be provided by Pakai Server framework
 
-# Product: 	EndsMeet Server
-# Version: 	1.80
-# License:	MIT License
-# Developer:	Poon Yip Hoon (Aeric)
-# Donation:	https://paypal.me/aeric80/
-# GitHub:	https://github.com/pyhoon/EndsMeet
+# Product:   EndsMeet Server
+# Version: 	 3.00
+# License:	 MIT License
+# Developer: Poon Yip Hoon (Aeric)
+# Donation:	 https://paypal.me/aeric80/
+# GitHub:	 https://github.com/pyhoon/EndsMeet
 
 # Thanks to Erel, Anywhere Software for the great products and B4X community for encouragement and supports.
 # Please consider to donate to me so I can continue to improve this project
@@ -20,7 +20,6 @@ ROOT_PATH=
 API_NAME=api
 #API_VERSIONING=False
 #API_VERBOSE_MODE=True
-#API_ORDERED_KEYS=True
 
 # Server port
 PORT=8080

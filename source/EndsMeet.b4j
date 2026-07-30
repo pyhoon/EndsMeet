@@ -5,7 +5,7 @@ FileGroup1=Default Group
 Group=App
 Library1=javaobject
 Library2=jcore
-Library3=jserver
+Library3=jserver5
 Library4=minihtml
 Library5=webapiutils
 Module1=EndsMeet
@@ -18,7 +18,7 @@ Version=10.5
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		2.20
+' Version:		3.00
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -27,15 +27,15 @@ Version=10.5
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Update Version, ide://run?file=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=2.20&Args=B4J.DependsOn&Args=JavaObject,jServer
-#Macro: Title, Create B4xLib, ide://run?file=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
-#Macro: Title, Release folder, ide://run?file=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
-#Macro: Title, Copy to AddLibs, ide://run?file=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
+#Macro: Title, Update Version, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=3.00&Args=B4J.DependsOn&Args=JavaObject,jServer5
+#Macro: Title, Create B4xLib, ide://run?File=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
+#Macro: Title, Copy to AddLibs, ide://run?File=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
+#Macro: Title, Release Folder, ide://run?File=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
 	Public count As Int
-	Private Const VERSION As String = "2.20"
+	Private Const VERSION As String = "3.00"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
@@ -48,8 +48,12 @@ Sub AppStart (Args() As String)
 	App.Post("/modal", "Index")
 	App.Route("/api/*", "Index", Array("Get", "Put", "GET"))
 	For Each rt As Route In App.routes
-		LogColor($"${rt.Method}: ${rt.Class}->${rt.Path}"$, 0xFF0000FF)
+		LogColor($"${rt.Method}: "${rt.Path}"->${rt.Class}"$, 0xFF0000FF)
 	Next
+	
+	App.staticfiles.Folder = File.Combine(File.DirApp, "assets")
+	'App.staticfiles.Browsable = True
+	'App.staticfiles.Options = CreateMap("dirAllowed": True)
 	
 '	Log(TAB)
 '	Log("Checking MethodAvailable for /api/*")
