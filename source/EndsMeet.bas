@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  3.10
+' Version:  3.20
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -25,6 +25,7 @@ Sub Class_Globals
 	Private mRootPath 				As String
 	Private mServerUrl 				As String
 	Private mConfigFile				As String
+	Private mAppendPort				As Boolean
 	Private mLogEnabled 			As Boolean
 	Private mRedirectToHttps		As Boolean
 	Private mRemoveUnusedConfig		As Boolean
@@ -47,8 +48,9 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "3.10"
+	mVersion = "3.20"
 	mConfigFile = "config.ini"
+	mAppendPort = True
 	mRemoveUnusedConfig = True
 	mRootUrl = "http://127.0.0.1"
 	staticfiles.Folder = srvr.StaticFilesFolder
@@ -199,7 +201,7 @@ Public Sub Start
 	End If
 	mServerUrl = mRootUrl
 	If srvr.Port <> 80 Then
-		mServerUrl = mServerUrl & ":" & srvr.Port
+		If mAppendPort Then mServerUrl = mServerUrl & ":" & srvr.Port
 	End If
 	ctx.Put("SERVER_URL", mServerUrl)
 	If ssl.Enabled Then
@@ -233,10 +235,9 @@ Public Sub Start
 		' Add filter to redirect all traffic from http to https (optional)
 		srvr.AddFilter("/*", "HttpsFilter", False)
 		mRootUrl = mRootUrl.Replace("http:", "https:")
-		If ssl.Port = 443 Then
-			mServerUrl = mRootUrl
-		Else
-			mServerUrl = mRootUrl & ":" & ssl.Port
+		mServerUrl = mRootUrl
+		If ssl.Port <> 443 Then
+			If mAppendPort Then mServerUrl = mRootUrl & ":" & ssl.Port
 		End If
 		ctx.Put("SERVER_URL", mServerUrl)
 	End If
@@ -301,6 +302,16 @@ Public Sub getServerUrl As String
 	Return mServerUrl
 End Sub
 
+' Set to False if using Nginx Reverse Proxy. Default=True
+Public Sub getAppendPort As Boolean
+	Return mAppendPort
+End Sub
+
+Public Sub setAppendPort (Append As Boolean)
+	mAppendPort = Append
+End Sub
+
+' Print SSL and CORS messages
 Public Sub getLogEnabled As Boolean
 	Return mLogEnabled
 End Sub
