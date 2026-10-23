@@ -5,13 +5,14 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  3.20
+' Version:  3.30
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
 ' Donation: PayPal (https://paypal.me/aeric80/)
 Sub Class_Globals
 	Public ctx 						As Map
+	Public env 						As Map
 	Public srvr 					As Server
 	Public api 						As ApiSettings
 	Public ssl 						As SslSettings
@@ -48,7 +49,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "3.20"
+	mVersion = "3.30"
 	mConfigFile = "config.ini"
 	mAppendPort = True
 	mRemoveUnusedConfig = True
@@ -59,6 +60,7 @@ Public Sub Initialize
 	api.VerboseMode = True
 	api.PayloadType = "application/json"
 	api.ContentType = "application/json"
+	LoadDotEnv
 End Sub
 
 ' Add path and class which allows GET method 
@@ -158,6 +160,12 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 	Dim PackageName As String = jo.GetField("packageName")
 	Dim Handler As String = GetType(Class).Replace(PackageName & ".", "")
 	Return MethodAvailable(Method, Path, Handler)
+End Sub
+
+' Load from .env file in assets
+' e.g PORT, SSL_PORT, ROOT_URL, ROOT_PATH, REDIRECT_TO_HTTPS
+Private Sub LoadDotEnv
+	env = File.ReadMap(File.DirAssets, ".env")
 End Sub
 
 ' Load from config file
