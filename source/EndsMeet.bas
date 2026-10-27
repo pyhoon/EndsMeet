@@ -46,8 +46,6 @@ Public Sub Initialize
 	mConfigFile = "config.ini"
 	mRootUrl = "http://127.0.0.1"
 	mRemoveUnusedConfig = True
-	ApplyConfig
-	LoadDotEnv
 End Sub
 
 '<code>App.AssetsFolder = File.Combine(File.DirApp, "assets")</code>
@@ -172,7 +170,7 @@ End Sub
 ' Load and apply settings from .env file in assets
 ' SSL: SSL_PORT, SSL_ENABLED, SSL_KEYSTORE_DIR, SSL_KEYSTORE_FILE, SSL_KEYSTORE_PASSWORD
 ' SMTP: SMTP_PORT, SMTP_ENABLED, SMTP_USESSL, SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD
-Private Sub LoadDotEnv
+Public Sub LoadDotEnv
 	Try
 		env = File.ReadMap(File.DirAssets, ".env")
 		If env.ContainsKey("SSL_PORT") Then ssl.Port = env.Get("SSL_PORT")
@@ -194,7 +192,7 @@ End Sub
 ' Load and apply settings from config file
 ' Server: PORT, ROOT_URL, ROOT_PATH, HIDE_PORT
 ' Api: API_NAME, API_VERSIONING, API_VERBOSE_MODE
-Public Sub ApplyConfig
+Public Sub LoadConfig
 	If File.Exists(File.DirApp, mConfigFile) Then
 		ctx = File.ReadMap(File.DirApp, mConfigFile)
 		If ctx.ContainsKey("PORT") Then srvr.Port = ctx.Get("PORT")
