@@ -1,5 +1,5 @@
 # Product:   EndsMeet Server
-# Version:   3.30
+# Version:   4.00
 # License:   MIT License
 # Developer: Poon Yip Hoon (Aeric)
 # GitHub:    https://github.com/pyhoon/EndsMeet
@@ -22,7 +22,6 @@ ROOT_PATH=
 
 # Server port
 PORT=8080
-REDIRECT_TO_HTTPS=False
 
 # API settings
 API_NAME=api
