@@ -7,20 +7,26 @@ FileGroup2=Default Group
 Group=App
 Library1=javaobject
 Library2=jcore
-Library3=minihtml
-Library4=webapiutils
-Library5=jserver
-Module1=EndsMeet
-Module2=HttpsFilter
-Module3=Index
+Library3=jserver
+Library4=minihtml
+Library5=webapiutils
+Module1=ApiSettings
+Module2=CorsFilter
+Module3=CorsSettings
+Module4=EmailSettings
+Module5=EndsMeet
+Module6=HttpsFilter
+Module7=Index
+Module8=SslSettings
+Module9=StaticFilesSettings
 NumberOfFiles=2
 NumberOfLibraries=5
-NumberOfModules=3
+NumberOfModules=9
 Version=10.7
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		3.30
+' Version:		4.00
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -29,23 +35,23 @@ Version=10.7
 #MergeLibraries: True
 #End Region
 #Region Macros
-#Macro: Title, Update Version, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=3.30&Args=B4J.DependsOn&Args=JavaObject,jServer
-#Macro: Title, Create B4xLib, ide://run?File=%JAVABIN%\jar.exe&WorkingDirectory=..&args=-cMf&args=..\release\%PROJECT_NAME%.b4xlib&args=EndsMeet.bas&args=manifest.txt&args=..\LICENSE
-#Macro: Title, Copy to AddLibs, ide://run?File=%COMSPEC%&args=/c&args=copy&args=%PROJECT%\..\release\*.b4xlib&args=%ADDITIONAL%
+#Macro: Title, Update Version, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=4.00&Args=B4J.DependsOn&Args=JavaObject,jServer&Args=CustomClassTemplates&Args=Server+Filter+(Cors)|CorsFilter,Server+Filter+(Https)|HttpsFilter
+#Macro: Title, Create B4xLib, ide://run?File=%JAVABIN%\jar.exe&WorkingDirectory=..&Args=-cMf&Args=..\release\%PROJECT_NAME%.b4xlib&Args=EndsMeet.bas&Args=*Filter.bas&Args=*Settings.bas&Args=*.b4x_excluded&Args=manifest.txt&Args=Files\.env&Args=..\LICENSE
+#Macro: Title, Copy to AddLibs, ide://run?File=%COMSPEC%&Args=/c&Args=copy&Args=%PROJECT%\..\release\*.b4xlib&Args=%ADDITIONAL%
 #Macro: Title, Release Folder, ide://run?File=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
 #End Region
 Sub Process_Globals
 	Public App As EndsMeet
 	Public count As Int
-	Private Const VERSION As String = "3.30"
+	Private Const VERSION As String = "4.00"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>
 Sub AppStart (Args() As String)
 	App.Initialize
-	App.LoadConfig
-	App.LogEnabled = True
-	App.AppendPort = False
+	App.ApplyConfig
+	'App.LogEnabled = True
+	'App.HidePort = True
 	
 	App.Get("", "Index")
 	App.Post("/modal", "Index")
@@ -54,9 +60,18 @@ Sub AppStart (Args() As String)
 		LogColor($"${rt.Method}: "${rt.Path}"->${rt.Class}"$, 0xFF0000FF)
 	Next
 	
-	App.staticfiles.Folder = File.Combine(File.DirApp, "assets")
-	'App.staticfiles.Browsable = True
-	'App.staticfiles.Options = CreateMap("dirAllowed": True)
+	App.ssl.Enabled = True
+	App.ssl.ShowLog = True
+	App.ssl.SingleThread = False
+	
+	App.cors.Enabled = True
+	App.cors.SingleThread = False
+	App.cors.AllowedOrigin = "*"
+	App.cors.AllowedMethods = "GET, OPTIONS"
+	App.cors.AllowedHeaders = "Content-Type"
+	
+	App.AssetsFolderBrowsable = True
+	App.AssetsFolder = File.Combine(File.DirApp, "assets")
 	
 	'Log(TAB)
 	'Log("Checking MethodAvailable for /api/*")
@@ -89,12 +104,13 @@ Sub AppStart (Args() As String)
 	'		LogColor($"${Method}: Method not available"$, 0xFFFF0000)
 	'	End If
 	'Next
-	
-	App.Start
-	App.LogStartupMessage 'optional
+	'App.LogStartupMessage 'optional
 	App.ctx.Put("VERSION", VERSION)
-	Log($"App version: ${App.ctx.Get("VERSION")}"$)
-	'Log(App.ctx.Get("SERVER_URL"))
-	Log("env=" & App.env)
+	'Log($"App version: ${App.ctx.Get("VERSION")}"$)
+	'Log("ctx=" & App.ctx)
+	'Log("env=" & App.env)
+	App.Start
+	Log(App.StartupMessage)
+	Log(App.ctx.Get("SERVER_URL"))
 	StartMessageLoop
 End Sub
