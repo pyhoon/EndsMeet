@@ -5,7 +5,7 @@ Type=Class
 Version=10.7
 @EndOfDesignText@
 ' Cors Filter
-' Version 4.00
+' Version 4.01
 Sub Class_Globals
 
 End Sub
