@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  4.01
+' Version:  4.02
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -17,7 +17,7 @@ Sub Class_Globals
 	Public api 						As ApiSettings
 	Public ssl 						As SslSettings
 	Public cors 					As CorsSettings
-	Public email 					As EmailSettings
+	Public smtp 					As SmtpSettings
 	Public staticfiles 				As StaticFilesSettings
 	Public routes					As List
 	Private mVersion				As String
@@ -38,11 +38,11 @@ Public Sub Initialize
 	ctx.Initialize
 	ssl.Initialize
 	cors.Initialize
-	email.Initialize
+	smtp.Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "4.01"
+	mVersion = "4.02"
 	mConfigFile = "config.ini"
 	mRootUrl = "http://127.0.0.1"
 	mRemoveUnusedConfig = True
@@ -170,7 +170,8 @@ Public Sub MethodAvailable2 (Method As String, Path As String, Class As Object) 
 End Sub
 
 ' Load and apply settings from .env file in assets
-' e.g SSL_PORT, SSL_ENABLED, SSL_KEYSTORE_DIR, SSL_KEYSTORE_FILE, SSL_KEYSTORE_PASSWORD
+' SSL: SSL_PORT, SSL_ENABLED, SSL_KEYSTORE_DIR, SSL_KEYSTORE_FILE, SSL_KEYSTORE_PASSWORD
+' SMTP: SMTP_PORT, SMTP_ENABLED, SMTP_USESSL, SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD
 Private Sub LoadDotEnv
 	Try
 		env = File.ReadMap(File.DirAssets, ".env")
@@ -179,13 +180,20 @@ Private Sub LoadDotEnv
 		If env.ContainsKey("SSL_KEYSTORE_DIR") Then ssl.KeystoreDir = env.Get("SSL_KEYSTORE_DIR")
 		If env.ContainsKey("SSL_KEYSTORE_FILE") Then ssl.KeystoreFile = env.Get("SSL_KEYSTORE_FILE")
 		If env.ContainsKey("SSL_KEYSTORE_PASSWORD") Then ssl.KeystorePassword = env.Get("SSL_KEYSTORE_PASSWORD")
+		If env.ContainsKey("SMTP_PORT") Then smtp.Port = env.Get("SMTP_PORT")
+		If env.ContainsKey("SMTP_ENABLED") Then smtp.Enabled = env.Get("SMTP_ENABLED").As(String).EqualsIgnoreCase("True")
+		If env.ContainsKey("SMTP_USESSL") Then smtp.UseSsl = env.Get("SMTP_USESSL").As(String).EqualsIgnoreCase("True")
+		If env.ContainsKey("SMTP_SERVER") Then smtp.Server = env.Get("SMTP_SERVER")
+		If env.ContainsKey("SMTP_USERNAME") Then smtp.UserName = env.Get("SMTP_USERNAME")
+		If env.ContainsKey("SMTP_PASSWORD") Then smtp.Password = env.Get("SMTP_PASSWORD")
 	Catch
 		File.WriteString(File.DirAssets, ".env", "")
 	End Try
 End Sub
 
 ' Load and apply settings from config file
-' e.g PORT, ROOT_URL, ROOT_PATH, HIDE_PORT, API_NAME, API_VERSIONING, API_VERBOSE_MODE
+' Server: PORT, ROOT_URL, ROOT_PATH, HIDE_PORT
+' Api: API_NAME, API_VERSIONING, API_VERBOSE_MODE
 Public Sub ApplyConfig
 	If File.Exists(File.DirApp, mConfigFile) Then
 		ctx = File.ReadMap(File.DirApp, mConfigFile)
