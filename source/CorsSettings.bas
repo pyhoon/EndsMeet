@@ -5,7 +5,7 @@ Type=Class
 Version=10.7
 @EndOfDesignText@
 ' Cors Settings
-' Version 4.01
+' Version 4.02
 Sub Class_Globals
 	Private mEnabled As Boolean
 	Private mSingleThread As Boolean
