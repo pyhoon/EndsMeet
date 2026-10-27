@@ -1,5 +1,5 @@
 Author=Aeric
-Version=4.02
+Version=4.03
 B4J.DependsOn=JavaObject,jServer
 Supported Platforms=B4J
 CustomClassTemplates=Server Filter (Cors)|CorsFilter,Server Filter (Https)|HttpsFilter

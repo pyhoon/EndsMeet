@@ -26,7 +26,7 @@ Version=10.7
 @EndOfDesignText@
 #Region Project Attributes
 ' Product:		EndsMeet
-' Version:		4.02
+' Version:		4.03
 ' License:		MIT License
 ' GitHub:		https://github.com/pyhoon/EndsMeet
 ' Donation:		PayPal (https://paypal.me/aeric80/)
@@ -36,7 +36,7 @@ Version=10.7
 #End Region
 #Region Macros
 #Macro: Title, Class Templates, ide://run?File=%PROJECT%\create_excluded.bat&Args=..\CorsFilter.bas&Args=..\HttpsFilter.bas
-#Macro: Title, Update Manifest, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=4.02&Args=B4J.DependsOn&Args=JavaObject,jServer&Args=CustomClassTemplates&Args=Server+Filter+(Cors)|CorsFilter,Server+Filter+(Https)|HttpsFilter
+#Macro: Title, Update Manifest, ide://run?File=%ADDITIONAL%\..\B4X\manifest-writer.jar&Args=%PROJECT%&Args=%PROJECT%&Args=Version&Args=4.03&Args=B4J.DependsOn&Args=JavaObject,jServer&Args=CustomClassTemplates&Args=Server+Filter+(Cors)|CorsFilter,Server+Filter+(Https)|HttpsFilter
 #Macro: Title, Create B4xLib, ide://run?File=%JAVABIN%\jar.exe&WorkingDirectory=..&Args=-cMf&Args=..\release\%PROJECT_NAME%.b4xlib&Args=EndsMeet.bas&Args=*Settings.bas&Args=*.b4x_excluded&Args=manifest.txt&Args=..\LICENSE
 #Macro: Title, Copy to AddLibs, ide://run?File=%COMSPEC%&Args=/c&Args=copy&Args=%PROJECT%\..\release\*.b4xlib&Args=%ADDITIONAL%
 #Macro: Title, Release Folder, ide://run?File=%WINDIR%\SysWOW64\explorer.exe&Args=%PROJECT%\..\release
@@ -44,7 +44,7 @@ Version=10.7
 Sub Process_Globals
 	Public App As EndsMeet
 	Public count As Int
-	Private Const VERSION As String = "4.02"
+	Private Const VERSION As String = "4.03"
 End Sub
 
 ' <link>Open in browser|http://127.0.0.1:8080</link>

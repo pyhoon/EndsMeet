@@ -5,7 +5,7 @@ Type=Class
 Version=10.7
 @EndOfDesignText@
 ' Api Settings
-' Version 4.02
+' Version 4.03
 Sub Class_Globals
 	Private mName As String
 	Private mEnableHelp As Boolean

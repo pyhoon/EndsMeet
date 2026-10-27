@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  4.02
+' Version:  4.03
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -42,7 +42,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "4.02"
+	mVersion = "4.03"
 	mConfigFile = "config.ini"
 	mRootUrl = "http://127.0.0.1"
 	mRemoveUnusedConfig = True
@@ -193,16 +193,17 @@ End Sub
 ' Server: PORT, ROOT_URL, ROOT_PATH, HIDE_PORT
 ' Api: API_NAME, API_VERSIONING, API_VERBOSE_MODE
 Public Sub LoadConfig
-	If File.Exists(File.DirApp, mConfigFile) Then
-		ctx = File.ReadMap(File.DirApp, mConfigFile)
-		If ctx.ContainsKey("PORT") Then srvr.Port = ctx.Get("PORT")
-		If ctx.ContainsKey("ROOT_URL") Then mRootUrl = ctx.Get("ROOT_URL")
-		If ctx.ContainsKey("ROOT_PATH") Then mRootPath = ctx.Get("ROOT_PATH")
-		If ctx.ContainsKey("HIDE_PORT") Then mHidePort = ctx.Get("HIDE_PORT").As(String).EqualsIgnoreCase("True")
-		If ctx.ContainsKey("API_NAME") Then api.Name = ctx.Get("API_NAME")
-		If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
-		If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
+	If File.Exists(File.DirApp, mConfigFile) = False Then
+		File.Copy(File.DirAssets, "config.example", File.DirApp, mConfigFile)
 	End If
+	ctx = File.ReadMap(File.DirApp, mConfigFile)
+	If ctx.ContainsKey("PORT") Then srvr.Port = ctx.Get("PORT")
+	If ctx.ContainsKey("ROOT_URL") Then mRootUrl = ctx.Get("ROOT_URL")
+	If ctx.ContainsKey("ROOT_PATH") Then mRootPath = ctx.Get("ROOT_PATH")
+	If ctx.ContainsKey("HIDE_PORT") Then mHidePort = ctx.Get("HIDE_PORT").As(String).EqualsIgnoreCase("True")
+	If ctx.ContainsKey("API_NAME") Then api.Name = ctx.Get("API_NAME")
+	If ctx.ContainsKey("API_VERSIONING") Then api.Versioning = ctx.Get("API_VERSIONING").As(String).EqualsIgnoreCase("True")
+	If ctx.ContainsKey("API_VERBOSE_MODE") Then api.VerboseMode = ctx.Get("API_VERBOSE_MODE").As(String).EqualsIgnoreCase("True")
 End Sub
 
 ' Starts the server
