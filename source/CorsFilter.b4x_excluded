@@ -1,0 +1,24 @@
+﻿' Cors Filter
+' Version 3.33
+Sub Class_Globals
+
+End Sub
+
+Public Sub Initialize
+
+End Sub
+
+' This filter acts as a normal handler to inject CORS response headers
+Public Sub Filter (req As ServletRequest, resp As ServletResponse) As Boolean
+    resp.SetHeader("Access-Control-Allow-Origin", "*")
+    resp.SetHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+    resp.SetHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+    
+    ' If it's a preflight request, respond immediately with 200 OK and stop the chain
+    If req.Method.ToUpperCase = "OPTIONS" Then
+        resp.Status = 200
+        Return False
+    End If
+    
+    Return True ' Continue processing the request chain
+End Sub
