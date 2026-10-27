@@ -5,7 +5,7 @@ Type=Class
 Version=10.7
 @EndOfDesignText@
 ' Ssl Settings
-' Version 4.01
+' Version 4.02
 Sub Class_Globals
 	Private mPort As String
 	Private mEnabled As Boolean
