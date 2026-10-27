@@ -4,7 +4,8 @@ ModulesStructureVersion=1
 Type=Class
 Version=10.2
 @EndOfDesignText@
-'Https Filter class
+' Https Filter
+' Version 4.00
 Sub Class_Globals
 
 End Sub
@@ -18,8 +19,10 @@ Public Sub Filter (req As ServletRequest, resp As ServletResponse) As Boolean
 	If req.Secure Then
 		Return True
 	Else
-		resp.SendRedirect(req.FullRequestURI.Replace("http:", "https:") _
-       .Replace(Main.app.Port, Main.app.ssl.Port))
+		Dim Location As String = req.FullRequestURI
+		Location = Location.Replace("http:", "https:")
+		Location = Location.Replace(Main.App.Port, Main.App.ssl.Port)
+		resp.SendRedirect(Location)
 		Return False
 	End If
 End Sub
