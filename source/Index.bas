@@ -30,7 +30,6 @@ Sub Handle (req As ServletRequest, resp As ServletResponse)
 		Dim id As String = Path.SubString("/api/".Length)
 		HRM.ResponseCode = 200
 		HRM.ResponseMessage = "Success"
-		'HRM.ResponseData = Array()
 		HRM.ResponseObject = CreateMap("id": id)
 		WebApiUtils.ReturnHttpResponse(HRM, Response)
 	Else
