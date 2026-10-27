@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  4.00
+' Version:  4.01
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -27,14 +27,10 @@ Sub Class_Globals
 	Private mConfigFile				As String
 	Private mStartupMessage			As String
 	Private mHidePort				As Boolean
-	'Private mLogEnabled 			As Boolean
-	'Private mRedirectToHttps		As Boolean
 	Private mRemoveUnusedConfig		As Boolean
 	Private Const COLOR_RED 		As Int = 0xFFFF0000
 	Private Const COLOR_BLUE 		As Int = 0xFF0000FF
 	Type Route (Method As String, Path As String, Class As String)
-	'Type EmailSettings (SmtpUserName As String, SmtpPassword As String, SmtpServer As String, SmtpUseSsl As String, SmtpPort As Int)
-	'Type ApiSettings (Name As String, Versioning As Boolean, PayloadType As String, ContentType As String, EnableHelp As Boolean, VerboseMode As Boolean)
 End Sub
 
 Public Sub Initialize
@@ -46,7 +42,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "4.00"
+	mVersion = "4.01"
 	mConfigFile = "config.ini"
 	mRootUrl = "http://127.0.0.1"
 	mRemoveUnusedConfig = True
