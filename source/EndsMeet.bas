@@ -5,7 +5,7 @@ Type=Class
 Version=10.3
 @EndOfDesignText@
 ' Product:  EndsMeet
-' Version:  4.03
+' Version:  4.04
 ' License:  MIT License
 ' Author:   Poon Yip Hoon (Aeric)
 ' GitHub:   https://github.com/pyhoon/EndsMeet
@@ -42,7 +42,7 @@ Public Sub Initialize
 	routes.Initialize
 	staticfiles.Initialize
 	srvr.Initialize("")
-	mVersion = "4.03"
+	mVersion = "4.04"
 	mConfigFile = "config.ini"
 	mRootUrl = "http://127.0.0.1"
 	mRemoveUnusedConfig = True
@@ -218,7 +218,7 @@ Public Sub Start
 	End If
 	' Update useful keys
 	ctx.Put("ROOT_URL", mRootUrl)
-	ctx.Put("ROOT_PATH", mRootPath)	
+	ctx.Put("ROOT_PATH", mRootPath)
 	If ssl.Enabled Then
 		If ssl.KeystoreFile = "" Then
 			ssl.Enabled = False
@@ -230,21 +230,27 @@ Public Sub Start
 			If File.Exists(ssl.KeystoreDir, ssl.KeystoreFile) = False Then
 				ssl.Enabled = False
 				If ssl.ShowLog Then	LogColor("Ssl KeystoreFile is not found", COLOR_RED)
+			Else If IsNumber(ssl.Port) = False Or ssl.Port <= 0 Then
+				ssl.Enabled = False
+				If ssl.ShowLog Then	LogColor("Invalid SSL Port", COLOR_RED)
 			Else
 				Dim sc As SslConfiguration
 				sc.Initialize
 				sc.SetKeyStorePath(ssl.KeystoreDir, ssl.KeystoreFile)
 				sc.KeyStorePassword = ssl.KeystorePassword
 				srvr.SetSslConfiguration(sc, ssl.Port)
+				' Add filter to redirect all traffic from http to https (optional)
+				srvr.AddFilter("/*", "HttpsFilter", ssl.SingleThread)
+				mRootUrl = mRootUrl.Replace("http:", "https:")
 			End If
 		End If
-		If ssl.ShowLog Then LogColor("SSL is " & IIf(ssl.Enabled, "enabled", "disabled"), COLOR_BLUE)
-		' Add filter to redirect all traffic from http to https (optional)
-		srvr.AddFilter("/*", "HttpsFilter", ssl.SingleThread)
-		mRootUrl = mRootUrl.Replace("http:", "https:")
 		mServerUrl = mRootUrl
-		If ssl.Port <> 443 And mHidePort = False Then
-			mServerUrl = mRootUrl & ":" & ssl.Port
+		If mHidePort = False Then
+			If ssl.Port <> 443 And ssl.Enabled Then
+				mServerUrl = mServerUrl & ":" & ssl.Port				
+			Else
+				mServerUrl = mServerUrl & ":" & srvr.Port
+			End If
 		End If
 	Else
 		mServerUrl = mRootUrl
@@ -252,6 +258,7 @@ Public Sub Start
 			mServerUrl = mServerUrl & ":" & srvr.Port
 		End If
 	End If
+	If ssl.ShowLog Then LogColor("SSL is " & IIf(ssl.Enabled, "enabled", "disabled"), COLOR_BLUE)
 	If mRootPath <> "" Then
 		If mRootPath.StartsWith("/") = False Then mRootPath = "/" & mRootPath
 		If mRootPath.EndsWith("/") = True Then mRootPath = mRootPath.SubString2(0, mRootPath.Length)
